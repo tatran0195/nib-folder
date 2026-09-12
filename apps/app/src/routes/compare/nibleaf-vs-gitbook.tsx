@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { ComparePage } from '@/components/marketing/comparison-page';
+import { MarketingComparisonPage } from '@/features/marketing';
 import type { Comparison } from '@/lib/comparison-data';
 import { loadComparisonData } from '@/lib/comparison-loader';
 import { breadcrumbLd, canonicalHref, faqLd, getGithubStarsFn, pageMeta } from '@/lib/marketing-seo';
@@ -19,5 +19,5 @@ export const Route = createFileRoute('/compare/nibleaf-vs-gitbook')({
 
 function NibleafVsGitbookRoute() {
   const { data, stars } = Route.useLoaderData();
-  return <ComparePage data={data} stars={stars} />;
+  return <MarketingComparisonPage data={data} stars={stars} />;
 }

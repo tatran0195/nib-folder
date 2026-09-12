@@ -1,5 +1,6 @@
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { ArticlePage, articleMdxComponents } from '@/components/marketing/blog';
+import { articleMdxComponents } from '@/components/marketing/blog';
+import { MarketingArticlePage } from '@/features/marketing';
 import { blogComponent } from '@/lib/blog-components';
 import { articleHead } from '@/lib/blog-seo';
 import { getGithubStarsFn } from '@/lib/marketing-seo';
@@ -27,8 +28,8 @@ function ArticleRoute() {
     return null;
   }
   return (
-    <ArticlePage entry={entry} stars={stars}>
+    <MarketingArticlePage entry={entry} stars={stars}>
       <Body components={articleMdxComponents} />
-    </ArticlePage>
+    </MarketingArticlePage>
   );
 }

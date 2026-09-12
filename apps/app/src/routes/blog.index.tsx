@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { BlogIndexPage } from '@/components/marketing/blog';
+import { MarketingBlogIndexPage } from '@/features/marketing';
 import { breadcrumbLd, canonicalHref, getGithubStarsFn, pageMeta } from '@/lib/marketing-seo';
 
 export const Route = createFileRoute('/blog/')({
@@ -27,5 +27,5 @@ export const Route = createFileRoute('/blog/')({
 
 function BlogRoute() {
   const { entries, stars } = Route.useLoaderData();
-  return <BlogIndexPage entries={entries} stars={stars} />;
+  return <MarketingBlogIndexPage entries={entries} stars={stars} />;
 }

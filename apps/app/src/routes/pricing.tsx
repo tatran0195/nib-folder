@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { PricingPage } from '@/components/marketing/pricing';
+import { MarketingPricingPage } from '@/features/marketing';
 import { marketingFaqs } from '@/lib/marketing-faqs';
 import { breadcrumbLd, canonicalHref, faqLd, getGithubStarsFn, pageMeta } from '@/lib/marketing-seo';
 
@@ -25,5 +25,5 @@ export const Route = createFileRoute('/pricing')({
 
 function PricingRoute() {
   const { stars } = Route.useLoaderData();
-  return <PricingPage stars={stars} />;
+  return <MarketingPricingPage stars={stars} />;
 }

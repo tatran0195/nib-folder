@@ -1,6 +1,5 @@
 import type { Fetcher } from '@openrouter/sdk';
 import { describe, expect, it, vi } from 'vitest';
-
 import { OpenRouterChatProvider, OpenRouterEmbeddingProvider } from './providers';
 
 describe('OpenRouter SDK embeddings', () => {

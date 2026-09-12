@@ -1,7 +1,6 @@
 import { MCP_SCOPES } from '@nibleaf/shared/mcp';
 import { MAX_REDIRECT_RULES, validateRedirectGraph } from '@nibleaf/shared/redirects';
 import { z } from 'zod';
-
 import { isSafeInlineAssetContentType, normalizeAssetContentType } from './assets';
 import { themeConfigSchema } from './themes';
 

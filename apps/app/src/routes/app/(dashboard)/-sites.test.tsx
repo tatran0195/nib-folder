@@ -24,6 +24,14 @@ vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => mocks.navigate,
 }));
 vi.mock('@/hooks/api', () => ({ useProjects: mocks.useProjects }));
+vi.mock('@/services/projects.service', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/services/projects.service')>();
+  return {
+    ...actual,
+    useProjects: mocks.useProjects,
+    useCreateProject: () => ({ mutate: vi.fn(), isPending: false }),
+  };
+});
 vi.mock('@/components/app/new-project-dialog', () => ({ NewProjectDialog: () => null }));
 
 import { Route } from './sites';

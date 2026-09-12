@@ -1,5 +1,5 @@
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
-import { SitePageView } from '@/components/site/site-page-view';
+import { SiteHomePage } from '@/features/site';
 import { getSiteFn, getSitePageFn } from '@/functions/site';
 import { ApiResponseError } from '@/hooks/api/client-helpers';
 import { customDomainOrigin } from '@/lib/site-origin';
@@ -45,6 +45,5 @@ function SiteHome() {
   // Active language comes from the parent route's ?lang= search param.
   const { lang } = Route.useSearch();
   const { page } = Route.useLoaderData();
-  // Empty path resolves to the first page server-side.
-  return <SitePageView projectId={projectId} lang={lang} data={page} />;
+  return <SiteHomePage projectId={projectId} lang={lang} data={page} />;
 }

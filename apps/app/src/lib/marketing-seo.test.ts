@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-
 import { NIBLEAF_ORGANIZATION } from '@/lib/marketing-organization';
 import { marketingLd } from '@/lib/marketing-seo';
 

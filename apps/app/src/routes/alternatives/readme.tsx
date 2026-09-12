@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { AlternativesPage } from '@/components/marketing/comparison-page';
+import { MarketingAlternativesPage } from '@/features/marketing';
 import type { AlternativesRoundup } from '@/lib/comparison-data';
 import { loadComparisonData } from '@/lib/comparison-loader';
 import { breadcrumbLd, canonicalHref, faqLd, getGithubStarsFn, pageMeta } from '@/lib/marketing-seo';
@@ -19,5 +19,5 @@ export const Route = createFileRoute('/alternatives/readme')({
 
 function ReadmeAlternativesRoute() {
   const { data, stars } = Route.useLoaderData();
-  return <AlternativesPage data={data} stars={stars} />;
+  return <MarketingAlternativesPage data={data} stars={stars} />;
 }

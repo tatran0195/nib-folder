@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { DocumentationPlatformsPage } from '@/components/marketing/documentation-platforms';
+import { MarketingPlatformsPage } from '@/features/marketing';
 import { breadcrumbLd, canonicalHref, getGithubStarsFn, pageMeta } from '@/lib/marketing-seo';
 
 export const documentationPlatformsHead = () => ({
@@ -46,5 +46,5 @@ export const Route = createFileRoute('/documentation-platforms')({
 
 function DocumentationPlatformsRoute() {
   const stars = Route.useLoaderData();
-  return <DocumentationPlatformsPage stars={stars} />;
+  return <MarketingPlatformsPage stars={stars} />;
 }

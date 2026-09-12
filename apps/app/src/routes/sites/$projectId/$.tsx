@@ -1,6 +1,5 @@
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
-import { lazy, Suspense } from 'react';
-import { SitePageView } from '@/components/site/site-page-view';
+import { SiteContentPage } from '@/features/site';
 import { getSiteFn, getSitePageFn } from '@/functions/site';
 import { ApiResponseError } from '@/hooks/api/client-helpers';
 import type { SitePage } from '@/hooks/api/types';
@@ -9,10 +8,6 @@ import { customDomainOrigin } from '@/lib/site-origin';
 import { isCustomDomainSite } from '@/lib/site-paths';
 import { redirectIfConfigured } from '@/lib/site-redirects';
 import { pageHead } from '@/lib/site-seo';
-
-const OpenApiReferenceView = lazy(() =>
-  import('@/components/site/openapi-reference-view').then((module) => ({ default: module.OpenApiReferenceView })),
-);
 
 export const Route = createFileRoute('/sites/$projectId/$')({
   component: SitePath,
@@ -109,12 +104,5 @@ function SitePath() {
   // Active language comes from the parent route's ?lang= search param.
   const { lang } = Route.useSearch();
   const data = Route.useLoaderData();
-  if (data.kind === 'openapi') {
-    return (
-      <Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading API reference…</div>}>
-        <OpenApiReferenceView projectId={projectId} />
-      </Suspense>
-    );
-  }
-  return <SitePageView projectId={projectId} lang={lang} data={data.page} />;
+  return <SiteContentPage projectId={projectId} lang={lang} data={data} />;
 }

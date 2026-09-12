@@ -1,14 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { LandingPage } from '@/components/cloud-marketing';
-import { canonicalHref, getGithubStarsFn, marketingLd, pageMeta } from '@/lib/marketing-seo';
+import { MarketingHomePage } from '@/features/marketing';
+import { breadcrumbLd, canonicalHref, getGithubStarsFn, pageMeta } from '@/lib/marketing-seo';
 
 export const Route = createFileRoute('/')({
-  loader: async () => ({ stars: await getGithubStarsFn() }),
+  loader: () => getGithubStarsFn(),
   head: () => ({
     meta: pageMeta({
-      title: 'Nibleaf: visual Markdown docs with Arabic and RTL',
+      title: 'Nibleaf — the visual Markdown alternative to Mintlify',
       description:
-        'A documentation platform with a Notion-style Markdown editor, built-in search, versioned publishing, Arabic and RTL support, and a free cloud beta.',
+        'A Notion-style docs editor over plain Markdown. Built-in search, 12 interface languages, first-class RTL, and first-party analytics. Free cloud beta or install the public AGPL-3.0 release.',
       path: '/',
     }),
     links: [
@@ -17,12 +17,23 @@ export const Route = createFileRoute('/')({
       { rel: 'alternate', hrefLang: 'ar', href: canonicalHref('/ar') },
       { rel: 'alternate', hrefLang: 'x-default', href: canonicalHref('/') },
     ],
-    scripts: [marketingLd()],
+    scripts: [
+      breadcrumbLd([{ name: 'Home', path: '/' }]),
+      {
+        type: 'application/ld+json',
+        children: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'Nibleaf',
+          url: canonicalHref('/'),
+        }),
+      },
+    ],
   }),
-  component: Landing,
+  component: IndexRoute,
 });
 
-function Landing() {
-  const { stars } = Route.useLoaderData();
-  return <LandingPage stars={stars} />;
+function IndexRoute() {
+  const stars = Route.useLoaderData();
+  return <MarketingHomePage stars={stars} />;
 }

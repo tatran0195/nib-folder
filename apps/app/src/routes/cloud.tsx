@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { CloudPage } from '@/components/cloud-marketing';
+import { MarketingCloudPage } from '@/features/marketing';
 import { breadcrumbLd, canonicalHref, getGithubStarsFn, pageMeta } from '@/lib/marketing-seo';
 
 export const Route = createFileRoute('/cloud')({
@@ -24,5 +24,5 @@ export const Route = createFileRoute('/cloud')({
 
 function CloudRoute() {
   const { stars } = Route.useLoaderData();
-  return <CloudPage stars={stars} />;
+  return <MarketingCloudPage stars={stars} />;
 }

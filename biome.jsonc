@@ -32,6 +32,13 @@
   "assist": {
     "actions": {
       "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "identifierOrder": "natural",
+            "groups": [":NODE:", ":PACKAGE:", ":ALIAS:", ":PATH:", ":STYLE:"]
+          }
+        },
         "useSortedAttributes": "off",
         "useSortedInterfaceMembers": "off",
         "useSortedKeys": "off",

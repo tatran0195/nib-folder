@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { GuidesHub } from '@/components/marketing/guides';
+import { MarketingGuidesPage } from '@/features/marketing';
 import { breadcrumbLd, canonicalHref, getGithubStarsFn, pageMeta } from '@/lib/marketing-seo';
 
 export const Route = createFileRoute('/guides')({
@@ -28,5 +28,5 @@ export const Route = createFileRoute('/guides')({
 
 function GuidesRoute() {
   const stars = Route.useLoaderData();
-  return <GuidesHub locale="en" stars={stars} />;
+  return <MarketingGuidesPage locale="en" stars={stars} />;
 }
