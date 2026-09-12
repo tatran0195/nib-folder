@@ -33,7 +33,11 @@ export const ensureBucket = async (target?: StorageTarget): Promise<void> => {
       await client.send(new CreateBucketCommand({ Bucket: bucket }));
       logger.info({ bucket }, 'created storage bucket');
     } catch (error) {
-      logger.warn({ error, bucket }, 'could not ensure storage bucket (may already exist or be managed externally)');
+      if ((error as { code?: string })?.code === 'ECONNREFUSED') {
+        logger.debug({ bucket }, 'storage endpoint unreachable; skipping bucket creation');
+      } else {
+        logger.warn({ error, bucket }, 'could not ensure storage bucket (may already exist or be managed externally)');
+      }
     }
   }
 };

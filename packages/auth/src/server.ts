@@ -657,7 +657,7 @@ async function publishStarterSite(projectId: string, userId: string, locale?: st
 }
 
 /** Auto-provision a workspace + starter project so a new user lands in a usable app. */
-async function provisionWorkspace(user: { id: string; name?: string | null; email: string }, locale?: string): Promise<void> {
+export async function provisionWorkspace(user: { id: string; name?: string | null; email: string }, locale?: string): Promise<void> {
   try {
     const existing = await prisma.member.findFirst({ where: { userId: user.id } });
     if (existing) {

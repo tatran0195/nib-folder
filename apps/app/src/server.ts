@@ -30,9 +30,6 @@ import {
   notAcceptableHtmlResponse,
   preferredRepresentation,
 } from '@/lib/request-negotiation';
-import { renderSelfHostInstaller } from '@/lib/self-host-release';
-import PRODUCTION_COMPOSE from '../../../docker-compose.prod.yml?raw';
-import INSTALL_SCRIPT from '../../../scripts/install.sh?raw';
 
 /**
  * Custom server entry. Wraps TanStack Start's request handler to add
@@ -88,29 +85,8 @@ const IS_CLOUD_MARKETING = CONFIGURED_HOST === MARKETING_HOST;
 const REVISION = process.env.NIBLEAF_REVISION ?? 'development';
 const DRAIN_FILE = process.env.NIBLEAF_DRAIN_FILE ?? '/tmp/nibleaf-draining';
 
-/** Compatibility copies of the public self-hosting artifacts. The documented
- * command uses versioned GitHub release assets and verifies their committed
- * digests; these routes remain available for existing operators. */
-function serveSelfHostingArtifact(pathname: string, bare: string): Response | null {
-  if (!IS_CLOUD_MARKETING || bare !== MARKETING_HOST) {
-    return null;
-  }
-  const artifacts: Record<string, { body: string; type: string; filename: string }> = {
-    '/install.sh': { body: renderSelfHostInstaller(INSTALL_SCRIPT), type: 'text/x-shellscript; charset=utf-8', filename: 'nibleaf-install.sh' },
-    '/docker-compose.yml': { body: PRODUCTION_COMPOSE, type: 'application/yaml; charset=utf-8', filename: 'docker-compose.yml' },
-  };
-  const artifact = artifacts[pathname];
-  if (!artifact) {
-    return null;
-  }
-  return new Response(artifact.body, {
-    headers: {
-      'cache-control': 'public, max-age=300',
-      'content-disposition': `inline; filename="${artifact.filename}"`,
-      'content-type': artifact.type,
-      'x-content-type-options': 'nosniff',
-    },
-  });
+function serveSelfHostingArtifact(_pathname: string, _bare: string): Response | null {
+  return null;
 }
 
 // ─── Visitor IP forwarding for SSR loader fetches ────────────────────────────

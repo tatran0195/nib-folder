@@ -126,6 +126,7 @@ export class QdrantClient {
         url: options.url,
         apiKey: options.apiKey,
         timeout: options.timeoutMs ?? 8000,
+        checkCompatibility: false,
       });
   }
 

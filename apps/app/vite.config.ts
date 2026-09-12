@@ -70,6 +70,9 @@ export default defineConfig(({ mode }) => {
     resolve: { tsconfigPaths: true },
     server: {
       port: 4310,
+      fs: {
+        strict: false,
+      },
       // Vite's static middleware claims unknown dotted paths before Nitro in
       // development. Route imported media directly to the API at that layer.
       proxy: { '/api/public/assets': { target: apiTarget, changeOrigin: true } },

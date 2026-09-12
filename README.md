@@ -15,7 +15,6 @@ first-class Arabic/RTL support, custom domains, and a free cloud beta at
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/lord007tn/nibleaf?sort=semver&color=B96A3D)](https://github.com/lord007tn/nibleaf/releases)
 [![CI](https://github.com/lord007tn/nibleaf/actions/workflows/ci.yml/badge.svg)](https://github.com/lord007tn/nibleaf/actions/workflows/ci.yml)
-[![Docker image](https://github.com/lord007tn/nibleaf/actions/workflows/docker.yml/badge.svg)](https://github.com/lord007tn/nibleaf/pkgs/container/nibleaf)
 
 [Homepage](https://nibleaf.com) · [Documentation](https://docs.nibleaf.com) · [Docs source](docs/README.md) · [Quick start](#-quick-start) · [Features](#-features) · [Self-host](https://docs.nibleaf.com/getting-started/self-hosted) · [Architecture](#️-architecture) · [Contributing](CONTRIBUTING.md)
 
@@ -31,8 +30,7 @@ first-class Arabic/RTL support, custom domains, and a free cloud beta at
 
 Nibleaf lets you write documentation in Markdown/MDX, organize it into a navigable tree,
 and publish a fast, searchable, multilingual site — with versioned deploys, custom
-domains, per-site teams, and analytics. Run it with the guided installer or Docker
-Compose, or use the hosted beta. It's the docs platform you can operate end to end:
+domains, per-site teams, and analytics. It's the docs platform you can operate end to end:
 no per-seat pricing for the self-hosted edition, no proprietary content format, and
 your content stays in your database.
 
@@ -42,7 +40,7 @@ your content stays in your database.
   languages, per-language page trees, and right-to-left layout.
 - 📦 **Versioned publishing** — every publish is an immutable snapshot; the live site is
   always served from a READY deployment, so readers never see a half-written page.
-- 🏠 **Self-hosted** — Docker Compose or Coolify, bring-your-own Postgres + S3-compatible
+- 🏠 **Self-hosted** — bring-your-own Postgres, Redis, and S3-compatible
   storage. Your data never leaves your infrastructure.
 
 ## 📸 Screenshots
@@ -147,62 +145,28 @@ also verifies the release's production Compose file before it writes a mode-600
 `.env` or starts the stack:
 
 ```bash
-set -eu; d=$(mktemp -d); trap 'rm -rf "$d"' EXIT; curl -fsSLo "$d/nibleaf-install.sh" https://github.com/lord007tn/nibleaf/releases/download/v0.1.2/nibleaf-install.sh; actual=$(openssl dgst -sha256 "$d/nibleaf-install.sh"); actual=${actual##* }; [ "$actual" = "d23da907556cc31ddd4d7b3a7f62ed933106bcef8b2e9439c15e7ab71a05e59a" ] || { echo "Nibleaf installer checksum mismatch" >&2; exit 1; }; sh "$d/nibleaf-install.sh"
-```
-
-For manual setup, the recommended path below **pulls the prebuilt image** from
-GHCR (`ghcr.io/lord007tn/nibleaf`) — nothing is compiled on your server, so it
-runs fine on a small VPS:
-
-```bash
 git clone https://github.com/lord007tn/nibleaf
-cd nibleaf && cp .env.production.example .env
+cd nibleaf && cp .env.example .env
 
-# Edit .env — set APP_URL (your dashboard origin), the storage endpoints, and
-# fresh secrets (openssl rand -hex 32). The stack fails fast if one is missing.
-
-docker compose -f docker-compose.prod.yml pull
-docker compose -f docker-compose.prod.yml up -d
+# Edit .env — set APP_URL, Postgres, Redis, and storage endpoints.
+pnpm install
+pnpm db:deploy
+pnpm db:seed
+pnpm build
+pnpm start # or run individual services
 # → dashboard  http://127.0.0.1:4310   (put a TLS reverse proxy in front)
 ```
 
-Database migrations run automatically (the one-shot `migrate` service), and the
-image tag is **pinned** via `NIBLEAF_VERSION`. Read the
-**[backup and upgrade guide](https://docs.nibleaf.com/self-hosting/backups-upgrades)**
-before changing it. Open **`$APP_URL/sign-up`** and create the first
+Database migrations run via `pnpm db:deploy`. Open **`$APP_URL/sign-up`** and create the first
 account — it's provisioned with a workspace and a starter docs project
 automatically (no demo credentials are seeded in production). The full production
 guide — reverse proxy, TLS, wildcard subdomains, custom-domain TLS automation,
 backups, and restore testing — is in the
 **[Nibleaf documentation](https://docs.nibleaf.com/self-hosting/production)**.
 
-<details>
-<summary><b>Build from source instead</b> (needs ~5–6 GB free RAM)</summary>
+## 🚀 Deploy to production
 
-`docker-compose.yml` builds the whole monorepo in-container — the build needs
-roughly **5–6 GB of free RAM** and will OOM small servers. Prefer the pull-based
-quick start above unless you're modifying the code.
-
-```bash
-cp .env.example .env
-sed -i "s/^BETTER_AUTH_SECRET=.*/BETTER_AUTH_SECRET=$(openssl rand -hex 32)/" .env
-docker compose up -d --build
-# → dashboard  http://localhost:4310   (open /sign-up to create your account)
-# → API        http://localhost:4311/docs
-```
-
-</details>
-
-## 🐳 Deploy to production
-
-- **Docker Compose (recommended)** — the quick start above *is* the production
-  path; harden it with the **[production checklist](https://docs.nibleaf.com/self-hosting/production)**
-  (secrets, reverse proxy + TLS, wildcard docs subdomains, backups, security checklist).
-- **[Coolify](https://coolify.io)** — add a **Docker Compose** resource pointing
-  at [`docker-compose.coolify.yml`](docker-compose.coolify.yml), assign domains
-  to the `app` / `admin` / `maxio` services (Coolify auto-generates the
-  `SERVICE_*` secrets), set `SITE_BASE_DOMAIN` + `CUSTOM_DOMAIN_CNAME_TARGET`,
-  and deploy. Pin a build with `NIBLEAF_IMAGE=ghcr.io/lord007tn/nibleaf:v0.1.2`.
+- **Self-Hosted Node Services** — run `@nibleaf/server`, `@nibleaf/worker`, and `@nibleaf/app` directly on your Linux VPS / systemd / PM2 with PostgreSQL and Redis.
 - **Nibleaf Cloud** — don't want to run servers? The hosted beta at
   [nibleaf.com](https://nibleaf.com) is free while in beta.
 
@@ -246,9 +210,7 @@ links, and referenced published assets. Scheduled archives use IANA timezones an
 database-backed minute dispatcher, so retries are idempotent and daylight-saving changes
 keep the requested wall-clock time.
 
-PDF rendering requires Chromium. The project Docker image installs it automatically.
-Source/non-Docker workers must install a Chromium-compatible browser and set
-`EXPORT_CHROMIUM_PATH`. Export workers also need storage credentials and the `export`
+PDF rendering requires Chromium. Set `EXPORT_CHROMIUM_PATH` to point to your Chromium-compatible browser executable. Export workers also need storage credentials and the `export`
 queue in `WORKER_QUEUES` when an allowlist is used. Operators can tune
 `EXPORT_CONCURRENCY`, `EXPORT_MAX_ACTIVE_PER_PROJECT`, `EXPORT_MAX_DAILY_PER_PROJECT`,
 `EXPORT_MAX_PAGES`, `EXPORT_MAX_SNAPSHOT_BYTES`, `EXPORT_MAX_ASSET_BYTES`,
@@ -261,23 +223,18 @@ better-auth session cookies stay first-party with no CORS dance.
 
 ## 🧰 Tech stack
 
-TanStack Start · React 19 · Hono · better-auth · Prisma · PostgreSQL · BullMQ · Dragonfly ·
+TanStack Start · React 19 · Hono · better-auth · Prisma · PostgreSQL · BullMQ · Dragonfly / Redis ·
 Orama · optional Qdrant and ClickHouse · shadcn/ui (Base UI) · Tailwind CSS v4 · Zod · Pino · tsdown · Vite · Biome.
-
-> **Release boundary:** the integrated capabilities above are present in source `main`. The
-> checksummed installer and pinned public container remain v0.1.2 until a separate release is
-> published. Do not treat a source merge as an image or deployment receipt.
 
 ## 💻 Local development
 
-Prerequisites: **Node ≥ 22**, **pnpm 10**, **Docker**.
+Prerequisites: **Node ≥ 22**, **pnpm 10**, **PostgreSQL**, **Redis**.
 
 ```bash
 pnpm install
 cp .env.example .env
 
-# start infra only (Postgres, Dragonfly, maxio)
-docker compose -f docker-compose.dev.yml up -d
+# Ensure PostgreSQL and Redis are running locally, then:
 
 # create the schema + seed a demo workspace
 pnpm db:deploy      # or: pnpm db:migrate  (creates a new migration)

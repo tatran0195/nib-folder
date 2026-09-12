@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { blogEntry } from './blog';
 import { articleHead } from './blog-seo';
@@ -29,28 +29,6 @@ describe('alternatives and self-hosting first-publish content', () => {
       const structuredTypes = head.scripts.map((script) => JSON.parse(script.children)['@type']);
       expect(structuredTypes).toEqual(expect.arrayContaining(['Article', 'FAQPage']));
     }
-  });
-
-  it('binds the runnable workflow and backup boundary to the published release sources', () => {
-    const release = JSON.parse(readFileSync(new URL('../../../../release/self-host.json', import.meta.url), 'utf8')) as {
-      composeSha256: string;
-      installerSha256: string;
-      version: string;
-    };
-    const installer = readFileSync(new URL('../../../../scripts/install.sh', import.meta.url), 'utf8');
-    const compose = readFileSync(new URL('../../../../docker-compose.prod.yml', import.meta.url), 'utf8');
-
-    expect(selfHost).toContain(release.version);
-    expect(selfHost).toContain(release.installerSha256);
-    expect(selfHost).toContain(release.composeSha256);
-    expect(installer).not.toContain('scripts/backup.sh');
-    expect(selfHost).toContain('does not deliver the repository helper');
-    for (const service of ['app', 'server', 'worker', 'migrate', 'postgres', 'dragonfly', 'maxio']) {
-      expect(compose).toMatch(new RegExp(`^  ${service}:`, 'mu'));
-      expect(selfHost).toContain(`\`${service}\``);
-    }
-    expect(selfHost).toContain('docker compose logs migrate');
-    expect(selfHost).toContain('Click **Publish** yourself');
   });
 
   it('ships durable English and Arabic/RTL product evidence', () => {

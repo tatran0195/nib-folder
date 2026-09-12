@@ -1,4 +1,4 @@
-import { auth } from '@nibleaf/auth/server';
+import { provisionWorkspace } from '@nibleaf/auth/server';
 import { prisma } from '@nibleaf/database';
 import { logger } from '@nibleaf/logger';
 import { buildSnapshot } from '@nibleaf/shared/site';
@@ -12,11 +12,17 @@ async function seed() {
     throw new Error('Refusing to seed in production. Set ALLOW_SEED=1 to override.');
   }
 
-  // Sign up the demo user via better-auth (hashes the password + provisions a
-  // workspace and starter docs project through the create hook). Idempotent.
+  // Provision demo user and workspace
   const existing = await prisma.user.findUnique({ where: { email: DEMO.email }, select: { id: true } });
   if (!existing) {
-    await auth.api.signUpEmail({ body: DEMO });
+    const newUser = await prisma.user.create({
+      data: {
+        email: DEMO.email,
+        name: DEMO.name,
+        emailVerified: true,
+      },
+    });
+    await provisionWorkspace(newUser);
   }
 
   const user = await prisma.user.findUnique({ where: { email: DEMO.email } });
