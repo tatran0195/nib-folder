@@ -6,40 +6,8 @@ import { Slider } from '@nibleaf/design-system/components/ui/slider';
 import { Switch } from '@nibleaf/design-system/components/ui/switch';
 import { Textarea } from '@nibleaf/design-system/components/ui/textarea';
 import { cn } from '@nibleaf/design-system/lib/utils';
-import type { MessageKey } from '@nibleaf/i18n';
-import { translateFn, useT } from '@nibleaf/i18n/react';
-import type { ProjectConfigUpdate } from '@nibleaf/validators';
+import { useT } from '@nibleaf/i18n/react';
 import { cloneElement, isValidElement, type ReactElement, type ReactNode, useCallback, useEffect, useId, useRef } from 'react';
-import { toast } from 'sonner';
-
-type ConfigMutation = {
-  mutate: (vars: { config: ProjectConfigUpdate }, opts?: { onSuccess?: () => void; onError?: (error: unknown) => void }) => void;
-};
-
-const localizedFn = (key: MessageKey): string => translateFn(key);
-
-/**
- * Wraps `useUpdateProjectConfig(...).mutate` in a promise + toast so a TanStack
- * Form `onSubmit` can `await` it. The server deep-merges section-level config,
- * so callers pass just the one section they own (e.g. `{ footer: {...} }`).
- */
-export function saveConfigSection(update: ConfigMutation, config: ProjectConfigUpdate) {
-  return new Promise<void>((resolve) => {
-    update.mutate(
-      { config },
-      {
-        onSuccess: () => {
-          toast.success(localizedFn('common.saved'));
-          resolve();
-        },
-        onError: (error) => {
-          toast.error(error instanceof Error ? error.message : localizedFn('settings.saveError'));
-          resolve();
-        },
-      },
-    );
-  });
-}
 
 /**
  * Shared building blocks for the Site-configurations sections. Each section file
@@ -164,14 +132,6 @@ export function ToggleRow({
       <Switch checked={checked} disabled={disabled} onCheckedChange={onCheckedChange} aria-labelledby={titleId} />
     </div>
   );
-}
-
-/**
- * Canonical ordering for every language list in the settings surfaces:
- * the default language first, then the configured position.
- */
-export function sortLanguagesDefaultFirst<T extends { isDefault: boolean; position: number }>(languages: T[]): T[] {
-  return [...languages].sort((a, b) => (b.isDefault ? 1 : 0) - (a.isDefault ? 1 : 0) || a.position - b.position);
 }
 
 /** A language's display label; disabled languages carry the muted "hidden"
@@ -320,16 +280,3 @@ export function SaveBar({ isSubmitting, disabled = false }: { isSubmitting: bool
     </div>
   );
 }
-
-/** Shared input styling tokens. These layer on top of the base `Input`/`Textarea`
- *  spec (shared standard density, rounded-md, focus ring) — callers inherit that, so the
- *  tokens only carry the font and, for textareas, the taller min-height. */
-export const FIELD_INPUT = 'text-sm';
-export const FIELD_MONO = 'font-mono text-sm';
-export const FIELD_TEXTAREA = 'min-h-[84px] text-sm';
-
-/** Dense list-row inputs (variable/redirect/navbar rows): shorter and tighter.
- *  They always sit inside a bordered list container, so they carry a solid
- *  background and read as wells instead of border-on-border frames. */
-export const FIELD_COMPACT = '[--control-size-default:var(--control-size-compact)] rounded-md bg-background text-[13px]';
-export const FIELD_COMPACT_MONO = '[--control-size-default:var(--control-size-compact)] rounded-md bg-background font-mono text-[13px]';

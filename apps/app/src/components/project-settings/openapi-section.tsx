@@ -11,7 +11,8 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useDeleteOpenApi, useOpenApiConfiguration, useSyncOpenApi, useUpsertOpenApi } from '@/hooks/api';
 import { localeTag } from '@/lib/format';
-import { FIELD_INPUT, FIELD_MONO, Field, SectionHeader, Segmented } from './shared';
+import { Field, SectionHeader, Segmented } from './shared';
+import { FIELD_INPUT, FIELD_MONO } from './shared-helpers';
 
 type SourceType = 'upload' | 'url' | 'repository';
 

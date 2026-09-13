@@ -7,7 +7,8 @@ import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import type { Project } from '@/hooks/api';
 import { useUpdateProjectConfig, useUploadAsset } from '@/hooks/api';
-import { FIELD_INPUT, FIELD_MONO, Field, SaveBar, SectionHeader, saveConfigSection } from './shared';
+import { Field, SaveBar, SectionHeader } from './shared';
+import { FIELD_INPUT, FIELD_MONO, saveConfigSection } from './shared-helpers';
 
 type BrandingField = 'logoLight' | 'logoDark' | 'favicon' | 'logoHref';
 

@@ -9,21 +9,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import type { Language, Project } from '@/hooks/api';
 import { useLanguages, useUpdateLanguage, useUpdateProjectConfig } from '@/hooks/api';
-import {
-  DirtyStateReporter,
-  FIELD_COMPACT,
-  FIELD_COMPACT_MONO,
-  FIELD_INPUT,
-  Field,
-  GroupLabel,
-  LanguageScopePicker,
-  SaveBar,
-  SectionHeader,
-  saveConfigSection,
-  sortLanguagesDefaultFirst,
-  ToggleRow,
-  useScopeDirtyGuard,
-} from './shared';
+import { DirtyStateReporter, Field, GroupLabel, LanguageScopePicker, SaveBar, SectionHeader, ToggleRow, useScopeDirtyGuard } from './shared';
+import { FIELD_COMPACT, FIELD_COMPACT_MONO, FIELD_INPUT, saveConfigSection, sortLanguagesDefaultFirst } from './shared-helpers';
 
 interface NavRow {
   label: string;

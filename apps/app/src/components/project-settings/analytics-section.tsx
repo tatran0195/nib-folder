@@ -4,7 +4,8 @@ import { useT } from '@nibleaf/i18n/react';
 import { useForm } from '@tanstack/react-form';
 import type { Project } from '@/hooks/api';
 import { useUpdateProjectConfig } from '@/hooks/api';
-import { FIELD_MONO, Field, SaveBar, SectionHeader, saveConfigSection } from './shared';
+import { Field, SaveBar, SectionHeader } from './shared';
+import { FIELD_MONO, saveConfigSection } from './shared-helpers';
 
 // Match the shapes the live-site injector accepts, so an invalid id is caught in
 // the form instead of being silently dropped (and never emitting analytics).

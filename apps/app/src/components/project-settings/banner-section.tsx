@@ -7,18 +7,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import type { Language, Project } from '@/hooks/api';
 import { useLanguages, useUpdateLanguage, useUpdateProjectConfig } from '@/hooks/api';
-import {
-  DirtyStateReporter,
-  FIELD_INPUT,
-  Field,
-  LanguageScopePicker,
-  SaveBar,
-  SectionHeader,
-  saveConfigSection,
-  sortLanguagesDefaultFirst,
-  ToggleRow,
-  useScopeDirtyGuard,
-} from './shared';
+import { DirtyStateReporter, Field, LanguageScopePicker, SaveBar, SectionHeader, ToggleRow, useScopeDirtyGuard } from './shared';
+import { FIELD_INPUT, saveConfigSection, sortLanguagesDefaultFirst } from './shared-helpers';
 
 /** The editable banner values shared by the project scope and a language scope. */
 interface BannerValues {

@@ -7,7 +7,8 @@ import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import type { Project } from '@/hooks/api';
 import { useUpdateProjectConfig } from '@/hooks/api';
-import { Field, SaveBar, SectionHeader, Segmented, saveConfigSection } from './shared';
+import { Field, SaveBar, SectionHeader, Segmented } from './shared';
+import { saveConfigSection } from './shared-helpers';
 
 const HEADING_FONTS: [string, ...string[]] = ['Geist', 'Inter', 'Söhne', 'IBM Plex Sans', 'System UI'];
 const BODY_FONTS: [string, ...string[]] = ['Geist', 'Inter', 'Source Sans 3', 'System UI'];

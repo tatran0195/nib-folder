@@ -9,18 +9,8 @@ import { toast } from 'sonner';
 import type { Language, Project } from '@/hooks/api';
 import { useLanguages, useProjectSearchConfiguration, useUpdateLanguage, useUpdateProjectSearchConfiguration } from '@/hooks/api';
 import { SearchIndexDiagnostics } from './search-index-diagnostics';
-import {
-  DirtyStateReporter,
-  FIELD_INPUT,
-  Field,
-  LanguageScopePicker,
-  SaveBar,
-  SectionHeader,
-  Segmented,
-  sortLanguagesDefaultFirst,
-  ToggleRow,
-  useScopeDirtyGuard,
-} from './shared';
+import { DirtyStateReporter, Field, LanguageScopePicker, SaveBar, SectionHeader, Segmented, ToggleRow, useScopeDirtyGuard } from './shared';
+import { FIELD_INPUT, sortLanguagesDefaultFirst } from './shared-helpers';
 
 type Hotkey = 'cmdk' | 'slash';
 

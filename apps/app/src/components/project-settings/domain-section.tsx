@@ -13,7 +13,8 @@ import type { Project } from '@/hooks/api';
 import { useAddDomain, useDeleteDomain, useDomains, useSetPrimaryDomain, useVerifyDomain } from '@/hooks/api';
 import { localeTag } from '@/lib/format';
 import { copyToClipboard } from '@/lib/invitations';
-import { FIELD_MONO, SectionHeader } from './shared';
+import { SectionHeader } from './shared';
+import { FIELD_MONO } from './shared-helpers';
 
 export function DomainSection({ project }: { project: Project }) {
   const t = useT();

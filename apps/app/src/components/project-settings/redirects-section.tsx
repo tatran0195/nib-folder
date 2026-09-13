@@ -6,7 +6,8 @@ import { useForm } from '@tanstack/react-form';
 import { ArrowRight, Plus, Route, TriangleAlert, X } from 'lucide-react';
 import type { Project } from '@/hooks/api';
 import { useUpdateProjectConfig } from '@/hooks/api';
-import { FIELD_COMPACT_MONO, SaveBar, SectionHeader, saveConfigSection } from './shared';
+import { SaveBar, SectionHeader } from './shared';
+import { FIELD_COMPACT_MONO, saveConfigSection } from './shared-helpers';
 
 export function RedirectsSection({ project }: { project: Project }) {
   const t = useT();

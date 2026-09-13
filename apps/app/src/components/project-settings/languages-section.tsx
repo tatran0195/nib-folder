@@ -9,7 +9,8 @@ import { toast } from 'sonner';
 import { AddLanguageDialog } from '@/components/editor/add-language-dialog';
 import type { Language, Project } from '@/hooks/api';
 import { useDeleteLanguage, useLanguages, useUpdateLanguage } from '@/hooks/api';
-import { SectionHeader, sortLanguagesDefaultFirst } from './shared';
+import { SectionHeader } from './shared';
+import { sortLanguagesDefaultFirst } from './shared-helpers';
 
 /** A small uppercase chip (direction / default / hidden badges). */
 function Chip({ children, tone = 'muted' }: { children: React.ReactNode; tone?: 'muted' | 'primary' | 'warning' }) {

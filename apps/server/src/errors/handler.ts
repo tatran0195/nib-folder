@@ -3,6 +3,7 @@ import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { AppError } from './index';
+import { mapPrismaError } from '@/core/error-mapper';
 
 interface ErrorMiddlewareOptions {
   isDevelopment: boolean;
@@ -29,17 +30,21 @@ const codeForStatus = (status: number) => {
   }
 };
 
+import { mapPrismaError } from '@/core/error-mapper';
+
 /** Global error handler: converts AppError / HTTPException / unknown into JSON responses. */
 export const errorMiddleware =
   ({ isDevelopment }: ErrorMiddlewareOptions) =>
   (err: Error, ctx: Context) => {
-    if (err instanceof AppError) {
-      if (err.status >= 500) {
-        logger.error({ err, code: err.code }, 'AppError (server)');
+    const error = mapPrismaError(err) ?? err;
+
+    if (error instanceof AppError) {
+      if (error.status >= 500) {
+        logger.error({ err: error, code: error.code }, 'AppError (server)');
       } else {
-        logger.debug({ code: err.code, message: err.message }, 'AppError (client)');
+        logger.debug({ code: error.code, message: error.message }, 'AppError (client)');
       }
-      return ctx.json(err.toJSON(), err.status);
+      return ctx.json(error.toJSON(), error.status);
     }
 
     if (err instanceof HTTPException) {

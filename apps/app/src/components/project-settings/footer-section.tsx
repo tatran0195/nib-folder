@@ -7,19 +7,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import type { Language, Project } from '@/hooks/api';
 import { useLanguages, useUpdateLanguage, useUpdateProjectConfig } from '@/hooks/api';
-import {
-  DirtyStateReporter,
-  FIELD_INPUT,
-  FIELD_MONO,
-  Field,
-  LanguageScopePicker,
-  SaveBar,
-  SectionHeader,
-  saveConfigSection,
-  sortLanguagesDefaultFirst,
-  ToggleRow,
-  useScopeDirtyGuard,
-} from './shared';
+import { DirtyStateReporter, Field, LanguageScopePicker, SaveBar, SectionHeader, ToggleRow, useScopeDirtyGuard } from './shared';
+import { FIELD_INPUT, FIELD_MONO, saveConfigSection, sortLanguagesDefaultFirst } from './shared-helpers';
 
 type FooterConfig = NonNullable<ProjectConfig['footer']>;
 

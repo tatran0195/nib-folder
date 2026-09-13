@@ -13,17 +13,8 @@ import { env } from '@/env';
 import type { Language, Project } from '@/hooks/api';
 import { useLanguages, useUpdateLanguage, useUpdateProject } from '@/hooks/api';
 import { required } from '@/lib/form';
-import {
-  FIELD_INPUT,
-  FIELD_TEXTAREA,
-  Field,
-  GroupLabel,
-  LanguageOptionLabel,
-  SaveBar,
-  SectionHeader,
-  Segmented,
-  sortLanguagesDefaultFirst,
-} from './shared';
+import { Field, GroupLabel, LanguageOptionLabel, SaveBar, SectionHeader, Segmented } from './shared';
+import { FIELD_INPUT, FIELD_TEXTAREA, sortLanguagesDefaultFirst } from './shared-helpers';
 
 /** A small curated set of emoji icons the project can use as its avatar glyph. */
 const ICON_CHOICES = ['📘', '📕', '📗', '🚀', '⚡', '🛠️', '🧩', '🔌', '📦', '🌐', '🔭', '✨'];
