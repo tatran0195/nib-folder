@@ -41,4 +41,15 @@ describe('@nibleaf/jobs schedule registry', () => {
     expect(runCron).toHaveBeenCalledOnce();
     expect(runInterval).not.toHaveBeenCalled();
   });
+
+  it('propagates errors when schedule registration fails', async () => {
+    const errorCron = vi.fn().mockRejectedValue(new Error('Redis connection failed'));
+    const moduleA: NibleafModule = {
+      key: 'mod-faulty',
+      title: 'Faulty Module',
+      schedules: [{ name: 'failing-cron', cron: '0 0 * * *', run: errorCron }],
+    };
+
+    await expect(registerSchedules([moduleA])).rejects.toThrow('Redis connection failed');
+  });
 });

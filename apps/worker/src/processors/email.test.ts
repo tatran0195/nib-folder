@@ -18,7 +18,7 @@ const mocks = vi.hoisted(() => ({
   smtpSend: vi.fn(),
 }));
 
-vi.mock('@/env', () => ({ env: mocks.env }));
+vi.mock('../env', () => ({ env: mocks.env }));
 vi.mock('@nibleaf/logger', () => ({ createLogger: () => mocks.log }));
 vi.mock('postmark', () => ({
   Models: { LinkTrackingOptions: { None: 'None' } },

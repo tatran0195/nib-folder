@@ -26,7 +26,7 @@ export const publishWorkerModule: NibleafModule = {
     {
       name: 'deployment-reaper',
       intervalMs: 30_000,
-      run: startDeploymentReaper,
+      run: () => startDeploymentReaper(30_000),
     },
   ],
 };

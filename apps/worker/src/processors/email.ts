@@ -3,7 +3,7 @@ import { createLogger } from '@nibleaf/logger';
 import type { Job } from 'bullmq';
 import nodemailer from 'nodemailer';
 import { ServerClient } from 'postmark';
-import { env } from '@/env';
+import { env } from '../env';
 import { resolveEmailDelivery } from './email-delivery';
 import { postmarkPrivacyOptions } from './email-options';
 

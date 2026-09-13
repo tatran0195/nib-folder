@@ -18,8 +18,16 @@ export async function registerSchedules(modules: readonly NibleafModule[]): Prom
   for (const mod of modules) {
     for (const schedule of mod.schedules ?? []) {
       if (schedule.cron) {
-        await schedule.run();
-        logger.info({ module: mod.key, schedule: schedule.name, cron: schedule.cron }, 'registered repeatable cron schedule');
+        try {
+          await schedule.run();
+          logger.info({ module: mod.key, schedule: schedule.name, cron: schedule.cron }, 'registered repeatable cron schedule');
+        } catch (error) {
+          logger.error(
+            { module: mod.key, schedule: schedule.name, cron: schedule.cron, error },
+            'failed to register repeatable cron schedule',
+          );
+          throw error;
+        }
       }
     }
   }
