@@ -5,6 +5,7 @@ import { QueryProvider } from '@/integrations/tanstack-query/root-provider';
 import { useSession } from '@/services/auth-client';
 
 export const Route = createFileRoute('/(auth)')({
+  ssr: false,
   beforeLoad: async ({ location }) => {
     if (await getSessionFn()) {
       const firstPublish = location.pathname.endsWith('/sign-up') && new URLSearchParams(location.searchStr).get('intent') === 'first-publish';

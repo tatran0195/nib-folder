@@ -13,7 +13,6 @@ vi.mock('got', () => ({ default: mocks.got }));
 vi.mock('@/env.server', () => ({
   serverEnv: {
     APP_URL: 'http://localhost:4310',
-    CUSTOM_DOMAIN_EDGE_SECRET: '',
     INTERNAL_API_SECRET: '',
     PORT: 4310,
     TRUSTED_PROXY_HOPS: 0,

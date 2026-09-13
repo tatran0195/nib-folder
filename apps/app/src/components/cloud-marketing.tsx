@@ -68,7 +68,7 @@ const features: { icon: ComponentType<SVGProps<SVGSVGElement>>; title: string; b
   {
     icon: BarChart3,
     title: 'First-party analytics',
-    body: 'Page views, unique visitors, top pages, and reader searches are built into the product. Hosted traffic is delivered through Cloudflare.',
+    body: 'Page views, unique visitors, top pages, and reader searches are built into the product.',
   },
   {
     icon: ShieldCheck,
@@ -88,7 +88,7 @@ const features: { icon: ComponentType<SVGProps<SVGSVGElement>>; title: string; b
   {
     icon: Cloud,
     title: 'Bring your own storage',
-    body: 'Any S3-compatible store works: AWS S3, Cloudflare R2, Backblaze B2, or the bundled storage service.',
+    body: 'Any S3-compatible store works: AWS S3, Backblaze B2, or the bundled storage service.',
   },
 ];
 

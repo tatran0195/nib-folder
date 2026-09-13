@@ -69,10 +69,10 @@ describe('clientIpFromForwardedFor', () => {
     // Rotating spoofed values must not mint new buckets.
     expect(clientIpFromForwardedFor('1.1.1.1, 2.2.2.2, 203.0.113.7')).toBe('203.0.113.7');
   });
-  it('drops trustedHops public edge hops (e.g. Cloudflare) before choosing', () => {
-    // client, cloudflare-edge → with trustedHops=1 the CF address is not the client.
+  it('drops trustedHops public edge hops (e.g. edge proxy) before choosing', () => {
+    // client, edge-proxy → with trustedHops=1 the edge proxy address is not the client.
     expect(clientIpFromForwardedFor('203.0.113.7, 198.51.100.9', 1)).toBe('203.0.113.7');
-    // Spoof + client + CF edge: still the real client.
+    // Spoof + client + edge proxy: still the real client.
     expect(clientIpFromForwardedFor('9.9.9.9, 203.0.113.7, 198.51.100.9', 1)).toBe('203.0.113.7');
     // Never slices away every hop.
     expect(clientIpFromForwardedFor('203.0.113.7', 3)).toBe('203.0.113.7');

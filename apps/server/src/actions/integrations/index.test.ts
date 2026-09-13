@@ -37,10 +37,7 @@ vi.mock('@/env', () => ({
     POSTMARK_API_KEY: undefined,
     POSTMARK_MESSAGE_STREAM: undefined,
     SMTP_URL: undefined,
-    CUSTOM_DOMAIN_PROVIDER: 'noop',
-    CLOUDFLARE_SAAS_ZONE_ID: undefined,
-    CLOUDFLARE_SAAS_API_TOKEN: undefined,
-    CLOUDFLARE_SAAS_WORKER_SCRIPT: 'site-router',
+    CUSTOM_DOMAIN_PROVIDER: 'ingress',
     AI_DRAFT_MODEL: 'openai/model',
   },
 }));

@@ -24,9 +24,17 @@ const SECURITY_HEADERS = {
 };
 
 export default defineConfig(({ mode }) => {
+  const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url));
+  const rootEnv = loadEnv(mode, workspaceRoot, '');
+  for (const [key, val] of Object.entries(rootEnv)) {
+    if (process.env[key] === undefined) {
+      process.env[key] = val;
+    }
+  }
+
   const configEnv = createEnv({
     server: { VITE_API_URL: z.url().default('http://localhost:4311') },
-    runtimeEnv: loadEnv(mode, process.cwd(), ''),
+    runtimeEnv: process.env,
     emptyStringAsUndefined: true,
   });
   const apiTarget = configEnv.VITE_API_URL;
@@ -75,7 +83,9 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      host: true,
       port: 4310,
+      allowedHosts: true,
       fs: {
         strict: false,
       },

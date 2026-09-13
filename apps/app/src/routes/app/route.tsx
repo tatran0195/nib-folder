@@ -8,6 +8,7 @@ import { useSession } from '@/services/auth-client';
 import { ProjectProvider } from '@/stores/active-project';
 
 export const Route = createFileRoute('/app')({
+  ssr: false,
   beforeLoad: async () => {
     const routeSession = await getSessionFn();
     if (!routeSession) {

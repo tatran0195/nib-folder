@@ -3,6 +3,7 @@ import { z } from 'zod';
 import ProjectEditorPage from '@/features/editor/ProjectEditorPage';
 
 export const Route = createFileRoute('/app/projects/$projectId/editor')({
+  ssr: false,
   component: EditorRoute,
   validateSearch: (search) =>
     z

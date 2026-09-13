@@ -25,9 +25,7 @@ export type IntegrationProviderId =
   | 'maxio'
   | 'minio'
   | 'amazon-s3'
-  | 'cloudflare-r2'
-  | 'backblaze-b2'
-  | 'cloudflare';
+  | 'backblaze-b2';
 
 export const INTEGRATION_PROVIDER_IDS = [
   'github',
@@ -45,9 +43,7 @@ export const INTEGRATION_PROVIDER_IDS = [
   'maxio',
   'minio',
   'amazon-s3',
-  'cloudflare-r2',
   'backblaze-b2',
-  'cloudflare',
 ] as const satisfies readonly IntegrationProviderId[];
 
 export type IntegrationCapability =
@@ -178,9 +174,7 @@ export const INTEGRATION_CATALOG: readonly IntegrationManifest[] = [
   managed('maxio', 'storage', ['assets', 'health']),
   managed('minio', 'storage', ['assets', 'health']),
   managed('amazon-s3', 'storage', ['assets', 'health']),
-  managed('cloudflare-r2', 'storage', ['assets', 'health']),
   managed('backblaze-b2', 'storage', ['assets', 'health']),
-  managed('cloudflare', 'deployment', ['deployments', 'health']),
 ];
 
 export type IntegrationPublicConfig =
@@ -193,8 +187,7 @@ export type IntegrationPublicConfig =
   | { providerId: 'qdrant'; collectionAlias: string; searchRuntime: 'legacy' | 'shadow' | 'hybrid' }
   | { providerId: 'postmark'; messageStream: string | null }
   | { providerId: 'smtp' }
-  | { providerId: 'maxio' | 'minio' | 'amazon-s3' | 'cloudflare-r2' | 'backblaze-b2' }
-  | { providerId: 'cloudflare'; workerScript: string };
+  | { providerId: 'maxio' | 'minio' | 'amazon-s3' | 'backblaze-b2' };
 
 export interface IntegrationConnectionSummary {
   id: string;

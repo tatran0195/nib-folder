@@ -96,7 +96,7 @@ Private customer documentation supports dedicated reader accounts, audience/page
 - **Analytics** — page views, unique visitors, top pages, top searches, plus device and
   language breakdowns.
 - **Platform admin** — an internal operator panel for customers, sites, deployments, and roles.
-- **Bring-your-own storage** — any S3-compatible store (maxio, Cloudflare R2, AWS S3,
+- **Bring-your-own storage** — any S3-compatible store (maxio, AWS S3,
   Backblaze B2).
 - **Portable exports** — snapshot-consistent Markdown ZIP, print-ready PDF, and
   fully static HTML, plus timezone-aware archival schedules with retention and run history.
@@ -271,7 +271,7 @@ Demo login (after `pnpm db:seed`): `demo@nibleaf.test` / `nibleafdemo123`.
 All configuration is via environment variables — see
 [`.env.production.example`](.env.production.example) (production, pull-based stack)
 and [`.env.example`](.env.example) (local dev / source build). Storage is
-S3-compatible, so swap **maxio** for Cloudflare R2, AWS S3, or Backblaze B2 by
+S3-compatible, so swap **maxio** for AWS S3 or Backblaze B2 by
 changing the `STORAGE_*` variables. For production, set strong values for
 `BETTER_AUTH_SECRET`, `POSTGRES_PASSWORD`, and `STORAGE_SECRET_ACCESS_KEY`, and
 serve the apps behind a TLS-terminating reverse proxy. The

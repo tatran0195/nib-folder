@@ -18,7 +18,7 @@ export const marketingFaqs: { q: string; a: string }[] = [
   },
   {
     q: 'Can I use my own object storage?',
-    a: 'Absolutely. Nibleaf speaks the S3 API, so it works with any S3-compatible storage (AWS S3, Cloudflare R2, Backblaze B2, or the bundled storage service).',
+    a: 'Absolutely. Nibleaf speaks the S3 API, so it works with any S3-compatible storage (AWS S3, Backblaze B2, or the bundled storage service).',
   },
   {
     q: 'How does search work?',

@@ -28,7 +28,7 @@ corepack pnpm check    # tests + build + typecheck before pushing
 \`\`\`
 
 The build prerenders every page reachable from \`/\` (\`tanstackStart({ prerender: { enabled: true, crawlLinks: true } })\`),
-so \`.output/public\` deploys to Vercel, Netlify, Cloudflare Pages, GitHub Pages, or any static host. \`/\` renders the
+so \`.output/public\` deploys to Vercel, Netlify, GitHub Pages, or any static host. \`/\` renders the
 first page of the default language (${defaultLanguage?.label ?? 'default'}); every other page lives at its content path.
 
 ## Add a page

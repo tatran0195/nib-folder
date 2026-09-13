@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { randomBytes, timingSafeEqual } from 'node:crypto';
+import { randomBytes } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { translateFn } from '@nibleaf/i18n';
 import {
@@ -61,14 +61,25 @@ const startHandler = createStartHandler((context) => {
 // dev, matching how the SSR data loaders fetch.
 const SELF = `http://localhost:${serverEnv.PORT}`;
 
+const rawOwn = [
+  serverEnv.APP_URL,
+  ...(serverEnv.TRUSTED_ORIGINS ? serverEnv.TRUSTED_ORIGINS.split(',') : []),
+  'localhost',
+  'localhost:4310',
+  '127.0.0.1',
+  '127.0.0.1:4310',
+];
 const ownHosts = new Set(
-  [serverEnv.APP_URL, 'localhost:4310', '127.0.0.1:4310'].map(
-    (url) =>
-      String(url)
-        .replace(/^https?:\/\//, '')
-        .split('/')[0]
-        ?.toLowerCase() ?? '',
-  ),
+  rawOwn
+    .map(
+      (url) =>
+        String(url)
+          .trim()
+          .replace(/^https?:\/\//, '')
+          .split('/')[0]
+          ?.toLowerCase() ?? '',
+    )
+    .filter(Boolean),
 );
 
 // Paths the app serves itself — never rewritten to a site route.
@@ -139,8 +150,8 @@ const isPrivateIp = (ip: string): boolean => {
   return value === '::1' || value === '::' || value.startsWith('fc') || value.startsWith('fd') || value.startsWith('fe80');
 };
 
-/** Public edge hops appended by infrastructure the operator runs (e.g. 1 behind
- *  Cloudflare). Must match the API's TRUSTED_PROXY_HOPS. */
+/** Public edge hops appended by edge infrastructure you operate (e.g. 1 if public
+ *  edge traffic arrives through a reverse proxy). Must match the API's TRUSTED_PROXY_HOPS. */
 const TRUSTED_PROXY_HOPS = serverEnv.TRUSTED_PROXY_HOPS;
 
 /** Rightmost-untrusted hop of an x-forwarded-for chain — mirrors the API's
@@ -182,25 +193,7 @@ const publishedRequestAuth = new AsyncLocalStorage<PublishedRequestAuth>();
 // INTERNAL_API_SECRET; when unset the API simply ignores the hint.
 const INTERNAL_API_SECRET = serverEnv.INTERNAL_API_SECRET ?? '';
 
-// Cloudflare for SaaS terminates customer TLS at the edge and proxies every
-// vanity hostname to one DNS-only origin. Trust the original hostname only
-// when the Worker proves it with a server-only shared secret.
-const CUSTOM_DOMAIN_EDGE_SECRET = serverEnv.CUSTOM_DOMAIN_EDGE_SECRET ?? '';
-const safeSecretMatch = (left: string, right: string): boolean => {
-  if (!(left && right)) return false;
-  const a = Buffer.from(left);
-  const b = Buffer.from(right);
-  return a.length === b.length && timingSafeEqual(a, b);
-};
-
-const effectiveRequestHost = (request: Request, url: URL): string => {
-  const edgeSecret = request.headers.get('x-nibleaf-edge-secret') || '';
-  const edgeHost = request.headers.get('x-nibleaf-custom-host')?.trim().toLowerCase() || '';
-  if (safeSecretMatch(edgeSecret, CUSTOM_DOMAIN_EDGE_SECRET) && /^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}$/.test(edgeHost)) {
-    return edgeHost;
-  }
-  return (request.headers.get('host') || url.host).toLowerCase();
-};
+const effectiveRequestHost = (request: Request, url: URL): string => (request.headers.get('host') || url.host).toLowerCase();
 
 // Patch global fetch (the RPC client in src/services/api.ts uses it) so SSR fetches
 // to our own /api proxy carry the visitor's IP. Requests outside the request
@@ -562,8 +555,8 @@ Last reviewed: 2026-09-03
 - Harbor, Manuscript, and Signal support validated theme exchange and runnable Git-native repositories
 - Project-bound MCP uses expiring scoped keys and read-only adapters; theme import is preview-only
 - Custom-domain and project-subdomain workflows are active; operators must still verify their own DNS and TLS configuration
-- First-party reader analytics (page views, top pages, top searches); the hosted service also uses Cloudflare for delivery, security, and web analytics
-- Works with any S3-compatible storage (AWS S3, Cloudflare R2, Backblaze B2, or the bundled storage service)
+- First-party reader analytics (page views, top pages, top searches)
+- Works with any S3-compatible storage (AWS S3, Backblaze B2, or the bundled storage service)
 - Nibleaf Cloud (nibleaf.com) is a managed instance, free while in beta
 
 ## Guide academy
@@ -660,8 +653,8 @@ Nibleaf was built with English and Arabic authoring as core features, including 
 - Custom domains and subdomains: guided DNS setup and verification plus host-based published-site routing. Production DNS readiness depends on the configured domain and must be verified separately.
 - SEO built in: server-side rendering, per-page canonical/Open Graph/Twitter/JSON-LD, sitemaps, robots controls, hreflang, and noindex controls.
 - Per-site teams: each site is its own workspace with role-based members (owner/admin/editor).
-- Analytics: first-party page views, unique visitors, top pages, top searches, plus device and language breakdowns. Nibleaf Cloud also uses Cloudflare for delivery, security, and web analytics.
-- Bring-your-own storage: any S3-compatible store (AWS S3, Cloudflare R2, Backblaze B2, or the bundled storage service).
+- Analytics: first-party page views, unique visitors, top pages, top searches, plus device and language breakdowns.
+- Bring-your-own storage: any S3-compatible store (AWS S3, Backblaze B2, or the bundled storage service).
 
 ## Self-hosting
 
@@ -742,7 +735,6 @@ Nibleaf currently has no paid cloud plan. The managed cloud is free while in bet
 
 - There is no committed date or price for a future paid cloud plan.
 ${nibleafProductLimitations.map((limitation) => `- ${limitation}`).join('\n')}
-- Cloudflare processes traffic for delivery, security, and web analytics on the managed service.
 
 ## ${translateFn('marketing.machine.arabic.heading', undefined, 'ar')}
 

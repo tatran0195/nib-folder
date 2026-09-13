@@ -3,6 +3,7 @@ import { ProjectAccessBoundary } from '@/components/project/project-access-bound
 import { ProjectLayout } from '@/layouts/project';
 
 export const Route = createFileRoute('/app/projects/$projectId')({
+  ssr: false,
   component: ProjectRoute,
 });
 

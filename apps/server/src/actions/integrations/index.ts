@@ -192,7 +192,6 @@ const adapterConnection = (
 const storageProviderId = () => {
   const provider = storageKeys().STORAGE_PROVIDER;
   if (provider === 's3') return 'amazon-s3' as const;
-  if (provider === 'r2') return 'cloudflare-r2' as const;
   if (provider === 'b2') return 'backblaze-b2' as const;
   return provider;
 };
@@ -358,19 +357,13 @@ const listAuthorizedProjectIntegrations = async (projectId: string): Promise<Int
   }
   const storageId = storageProviderId();
   connections.set(storageId, adapterConnection(projectId, { providerId: storageId }, project.createdAt));
-  if (env.CUSTOM_DOMAIN_PROVIDER === 'cloudflare-saas' && env.CLOUDFLARE_SAAS_ZONE_ID && env.CLOUDFLARE_SAAS_API_TOKEN) {
-    connections.set(
-      'cloudflare',
-      adapterConnection(projectId, { providerId: 'cloudflare', workerScript: env.CLOUDFLARE_SAAS_WORKER_SCRIPT }, project.createdAt),
-    );
-  }
 
   return INTEGRATION_CATALOG.map((manifest) => ({
     ...manifest,
     availability:
       manifest.lifecycle !== 'managed' || connections.has(manifest.id)
         ? 'available'
-        : ['openrouter', 'qdrant', 'clickhouse', 'postmark', 'smtp', 'cloudflare'].includes(manifest.id)
+        : ['openrouter', 'qdrant', 'clickhouse', 'postmark', 'smtp'].includes(manifest.id)
           ? 'not_configured'
           : 'unavailable',
     connection: connections.get(manifest.id) ?? null,

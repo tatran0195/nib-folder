@@ -25,8 +25,7 @@ modules; project webhook connections use the common encrypted lifecycle.
 | AI and search | OpenRouter, Qdrant | Instance-managed, read-only in project settings | Official `@openrouter/sdk` and `@qdrant/js-client-rest` |
 | Product analytics | ClickHouse | Instance-managed, read-only in project settings | Existing ClickHouse client boundary |
 | Email | Postmark, SMTP | Instance-managed, read-only in project settings | Official Postmark SDK or the existing SMTP transport |
-| Asset storage | Maxio, MinIO, Amazon S3, Cloudflare R2, Backblaze B2 | Instance-managed, read-only in project settings | Existing AWS S3 SDK boundary |
-| Custom domains | Cloudflare for SaaS | Existing domain provisioning adapter | Existing Cloudflare provider boundary |
+| Asset storage | Maxio, MinIO, Amazon S3, Backblaze B2 | Instance-managed, read-only in project settings | Existing AWS S3 SDK boundary |
 
 Google OAuth signs users into Nibleaf and is intentionally outside the
 project-integration catalog. Add-ons own product feature switches, usage owns

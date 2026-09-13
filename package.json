@@ -34,7 +34,12 @@
     "db:deploy": "pnpm --filter @nibleaf/database migrate:deploy",
     "db:push": "pnpm --filter @nibleaf/database push",
     "db:seed": "pnpm --filter @nibleaf/server seed",
-    "db:studio": "pnpm --filter @nibleaf/database studio"
+    "db:studio": "pnpm --filter @nibleaf/database studio",
+    "domains:setup": "dotenv -e .env -- tsx scripts/setup-local-domains.ts setup",
+    "domains:add": "dotenv -e .env -- tsx scripts/setup-local-domains.ts add-custom",
+    "domains:list": "dotenv -e .env -- tsx scripts/setup-local-domains.ts list",
+    "domains:remove": "dotenv -e .env -- tsx scripts/setup-local-domains.ts remove-custom",
+    "domains:test": "dotenv -e .env -- tsx scripts/setup-local-domains.ts test"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.11",

@@ -46,6 +46,7 @@ export function GradientAvatar({ name, className }: { name: string; className?: 
       .toUpperCase() || 'U';
   return (
     <span
+      suppressHydrationWarning
       className={cn(
         'grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-primary/60 font-semibold text-primary-foreground',
         className,

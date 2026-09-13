@@ -69,12 +69,12 @@ export const isPrivateIp = (ip: string): boolean => {
  * by infrastructure we run are trustworthy, and those are the RIGHTMOST ones.
  *
  * We scan right-to-left, skipping the hops our own proxies added (private-network
- * addresses, plus `trustedHops` extra public ones for an edge like Cloudflare),
+ * addresses, plus `trustedHops` extra public ones for an edge proxy or CDN),
  * and take the first remaining address. Anything a client injected sits further
  * left and is ignored.
  *
  * @param trustedHops number of PUBLIC proxy hops appended by edge infrastructure
- *                    you operate (e.g. 1 behind Cloudflare). Private hops are
+ *                    you operate (e.g. 1 behind an edge proxy). Private hops are
  *                    always skipped and need not be counted.
  *
  * When every remaining hop is private (an internal-only deployment) the rightmost

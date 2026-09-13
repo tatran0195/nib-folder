@@ -8,7 +8,7 @@ export const serverEnv = createEnv({
     APP_URL: z.url().default('http://localhost:4310'),
     TRUSTED_PROXY_HOPS: z.coerce.number().int().nonnegative().default(0),
     INTERNAL_API_SECRET: z.string().optional(),
-    CUSTOM_DOMAIN_EDGE_SECRET: z.string().optional(),
+    TRUSTED_ORIGINS: z.string().optional(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

@@ -30,7 +30,7 @@ const buildFeatureGroups = (searchCapability: string): { title: string; rows: { 
     rows: [
       { label: searchCapability, cloud: true, self: true },
       { label: 'SSR, canonicals, JSON-LD, sitemaps, hreflang', cloud: true, self: true },
-      { label: 'Product analytics; Cloudflare also processes hosted traffic', cloud: true, self: true },
+      { label: 'Product analytics built into the platform', cloud: true, self: true },
     ],
   },
   {

@@ -36,10 +36,6 @@ actually consumes. Never commit a populated `.env`.
 | `SITE_BASE_DOMAIN` | No | Empty | Enables `<project>.<base-domain>` publishing; requires wildcard DNS and TLS. |
 | `CUSTOM_DOMAIN_CNAME_TARGET` | No | `SITE_BASE_DOMAIN` | Operator-controlled CNAME target shown to custom-domain owners. |
 | `CUSTOM_DOMAIN_PROVIDER` | No | `ingress` | Custom-domain automation strategy supported by the release. |
-| `CLOUDFLARE_SAAS_ZONE_ID` | For Cloudflare for SaaS | Empty | Zone identifier for managed custom hostnames. |
-| `CLOUDFLARE_SAAS_API_TOKEN` | For Cloudflare for SaaS | Empty | Narrow token for custom-hostname operations. |
-| `CLOUDFLARE_SAAS_WORKER_SCRIPT` | No | `nibleaf-custom-domain-edge` | Edge worker script name. |
-| `CUSTOM_DOMAIN_EDGE_SECRET` | For the managed edge path | Empty | Shared edge-to-origin authentication secret. |
 
 ## Required secrets
 

@@ -21,7 +21,7 @@ This snapshot separates observations from estimates and targets.
 | Crawl/index foundations | 22 marketing and 15 docs sitemap URLs returned 200, were indexable, and had matching self-canonicals | Strong technical base; protect it with regression tests |
 | Rendering | The marketing homepage and sampled articles contained substantive SSR HTML | Critical content does not depend on client-side rendering |
 | Machine-readable discovery | `robots.txt`, `sitemap.xml`, `llms.txt`, and `llms-full.txt` returned 200 | Strong AI/search discovery foundation |
-| Cloudflare lab test | Mobile performance 95, LCP 2.306s, CLS 0; desktop performance 96, LCP 0.680s, CLS 0.01 | Encouraging single-run lab evidence, not field Core Web Vitals |
+| Synthetic lab test | Mobile performance 95, LCP 2.306s, CLS 0; desktop performance 96, LCP 0.680s, CLS 0.01 | Encouraging single-run lab evidence, not field Core Web Vitals |
 | Local Lighthouse fallback | Three simulated mobile runs scored 78, 97, and 76; LCP varied from 2.038s to 4.230s | Variability is material; obtain CrUX or RUM percentiles before claiming CWV performance |
 | Product funnel | First-party events already cover sign-up, first edit, publish click, and successful manual publish | Extend reporting to time-to-first-publish and first-touch attribution |
 | GitHub | Public AGPL repository; 0 stars and 0 forks at the audit snapshot | Owned technical proof exists, but independent authority is still weak |
@@ -32,7 +32,7 @@ This snapshot separates observations from estimates and targets.
 
 - Google Search Console and GA4 inventory were blocked: the active Google session lacked the required OAuth scopes, and no Codex SEO OAuth/service-account configuration exists.
 - PageSpeed Insights was blocked by anonymous quota exhaustion; the authenticated project did not have the API enabled. CrUX had no configured API key.
-- No GA4 or Google Tag Manager tag was present on the marketing homepage. Cloudflare Web Analytics was present, but it does not provide the custom conversion events or UTM reporting required here.
+- No GA4 or Google Tag Manager tag was present on the marketing homepage.
 - Bing Webmaster credentials, verification, and IndexNow integration were not found.
 - Moz and Bing backlink credentials were absent. The free Common Crawl graph request timed out, so no backlink total, anchor distribution, or link-velocity claim is made.
 - DataForSEO and Firecrawl were unavailable. Search observations are directional web-search samples, not volume, difficulty, or rank measurements.
@@ -153,7 +153,7 @@ Track each opportunity by target, audience overlap, required asset, owner, outre
 
 System-created starter publishes must remain excluded. Store first-touch source/referrer and sanitized UTMs with consent and retention rules; do not put personal data into analytics event properties.
 
-This change set adds median sign-up-to-first-successful-manual-publish time and the count completing within 24 hours to the existing 30-day admin funnel. The next implementation should add marketing CTA/sign-up-start events and persist first-touch attribution into the sign-up event. Cloudflare Web Analytics can remain the privacy-conscious top-line page-view source, but it cannot replace first-party conversion events.
+This change set adds median sign-up-to-first-successful-manual-publish time and the count completing within 24 hours to the existing 30-day admin funnel. The next implementation should add marketing CTA/sign-up-start events and persist first-touch attribution into the sign-up event.
 
 ### Dashboard cadence
 
@@ -177,7 +177,7 @@ Targets below are hypotheses and operating gates, not current performance claims
 
 ### Days 0–30: establish measurement and proof
 
-- Obtain read-only GSC and GA4 access or explicitly decide to use Cloudflare plus first-party events. Save a 28-day query/page/device/country baseline.
+- Obtain read-only GSC and GA4 access or explicitly decide to use first-party events only. Save a 28-day query/page/device/country baseline.
 - Add `marketing_cta_clicked`, `signup_started`, and first-touch attribution with a privacy review.
 - Verify the new time-to-first-publish metric against test accounts and exclude automatic publishes.
 - Refresh the open-source tools pillar and Mintlify comparison with review dates, methods, primary sources, and real screenshots.
@@ -209,9 +209,6 @@ Every experiment record should include the hypothesis, page/cohort, start date, 
 - OpenAI crawler controls: <https://help.openai.com/en/articles/12627856-publishers-and-developers-faq>
 - Anthropic crawler controls: <https://support.anthropic.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler>
 - Perplexity crawlers: <https://docs.perplexity.ai/docs/resources/perplexity-crawlers>
-- Cloudflare Web Analytics data model: <https://developers.cloudflare.com/web-analytics/data-metrics/data-origin-and-collection/>
-- Cloudflare Web Analytics FAQ: <https://developers.cloudflare.com/web-analytics/faq/>
-- Cloudflare GraphQL Analytics API: <https://developers.cloudflare.com/analytics/graphql-api/>
 - Mintlify documentation: <https://www.mintlify.com/docs/what-is-mintlify>
 - GitBook documentation and Git Sync: <https://gitbook.com/docs> and <https://www.gitbook.com/features/git-sync>
 - ReadMe plans: <https://docs.readme.com/main/docs/plans-and-pricing>

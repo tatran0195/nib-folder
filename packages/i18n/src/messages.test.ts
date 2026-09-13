@@ -74,8 +74,6 @@ describe('Paraglide message catalogs', () => {
         'Amazon S3',
         'Backblaze B2',
         'ClickHouse',
-        'Cloudflare',
-        'Cloudflare R2',
         'Discord',
         'GitHub',
         'GitLab',

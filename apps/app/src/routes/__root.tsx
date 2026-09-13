@@ -72,7 +72,7 @@ function RootDocument({ children }: { children: ReactNode }) {
         {siteProjectId ? <meta name="nibleaf-site-project" content={siteProjectId} /> : null}
         <HeadContent />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <ThemeProvider applyDocumentTheme={!siteProjectId} initialThemeScript={siteThemeBootstrap ?? undefined}>
           {children}
         </ThemeProvider>

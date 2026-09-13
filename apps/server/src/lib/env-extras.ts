@@ -37,7 +37,7 @@ export const envExtras = createEnv({
       .optional()
       .transform((value) => value?.toUpperCase()),
     /** Number of PUBLIC proxy hops appended by edge infrastructure you operate
-     *  (e.g. 1 behind Cloudflare). Private-network hops (nginx/Traefik/the app's
+     *  (e.g. 1 behind an external edge reverse proxy). Private-network hops (nginx/Traefik/the app's
      *  own proxy) are always skipped and must NOT be counted. Raising this past
      *  your real proxy depth lets clients spoof their rate-limit identity. */
     TRUSTED_PROXY_HOPS: z.coerce.number().int().min(0).max(8).default(0),

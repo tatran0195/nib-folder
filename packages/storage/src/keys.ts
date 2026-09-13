@@ -5,7 +5,7 @@ export const keys = () =>
   createEnv({
     server: {
       // Any S3-compatible store. maxio is the local/self-host default.
-      STORAGE_PROVIDER: z.enum(['maxio', 'minio', 's3', 'r2', 'b2']).default('maxio'),
+      STORAGE_PROVIDER: z.enum(['maxio', 'minio', 's3', 'b2']).default('maxio'),
       // Internal endpoint used for server→storage operations (e.g. `maxio:9000`).
       STORAGE_ENDPOINT: z.string().optional(),
       // Browser-reachable endpoint used to SIGN presigned upload/download URLs

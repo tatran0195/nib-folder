@@ -15,7 +15,6 @@ import {
   ArrowLeft,
   Bot,
   ChartNoAxesCombined,
-  Cloud,
   Database,
   GitBranch,
   HardDrive,
@@ -23,7 +22,6 @@ import {
   MessageSquare,
   PlugZap,
   RefreshCw,
-  Rocket,
   Search,
   Send,
   ShieldCheck,
@@ -144,23 +142,11 @@ const PROVIDER_META: Record<IntegrationProviderId, { name: MessageKey; descripti
     icon: HardDrive,
     tint: 'bg-orange-500/15 text-orange-700 dark:text-orange-300',
   },
-  'cloudflare-r2': {
-    name: 'settings.integrations.provider.cloudflareR2',
-    description: 'settings.integrations.cloudflareR2.description',
-    icon: Cloud,
-    tint: 'bg-orange-500/15 text-orange-700 dark:text-orange-300',
-  },
   'backblaze-b2': {
     name: 'settings.integrations.provider.backblazeB2',
     description: 'settings.integrations.backblazeB2.description',
     icon: HardDrive,
     tint: 'bg-red-500/15 text-red-700 dark:text-red-300',
-  },
-  cloudflare: {
-    name: 'settings.integrations.provider.cloudflare',
-    description: 'settings.integrations.cloudflare.description',
-    icon: Rocket,
-    tint: 'bg-orange-500/15 text-orange-700 dark:text-orange-300',
   },
 };
 
@@ -291,8 +277,6 @@ function ConfigRows({ config }: { config: IntegrationPublicConfig }) {
         ];
       case 'postmark':
         return [[t('settings.integrations.field.messageStream'), config.messageStream ?? t('settings.integrations.value.default')]];
-      case 'cloudflare':
-        return [[t('settings.integrations.field.worker'), config.workerScript]];
       default:
         return [];
     }

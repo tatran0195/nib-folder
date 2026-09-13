@@ -36,7 +36,7 @@ describe('admin operations privacy boundary', () => {
       {
         id: 'domain-1',
         domain: 'docs.example.com',
-        provider: 'CLOUDFLARE',
+        provider: 'INGRESS',
         dnsStatus: 'ERROR',
         sslStatus: 'PENDING',
         isPrimary: true,

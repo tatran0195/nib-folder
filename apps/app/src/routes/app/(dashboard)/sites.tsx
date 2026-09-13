@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import DashboardSitesPage from '@/features/dashboard/DashboardSitesPage';
 
 export const Route = createFileRoute('/app/(dashboard)/sites')({
+  ssr: false,
   component: DashboardSitesRoute,
   validateSearch: (search: Record<string, unknown>): { newSite?: boolean } =>
     search.newSite === true || search.newSite === 'true' ? { newSite: true } : {},

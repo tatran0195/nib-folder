@@ -3,6 +3,7 @@ import { z } from 'zod';
 import ProjectPreviewPage from '@/features/project/ProjectPreviewPage';
 
 export const Route = createFileRoute('/app/projects/$projectId/preview')({
+  ssr: false,
   component: ProjectPreviewRoute,
   validateSearch: (search) =>
     z

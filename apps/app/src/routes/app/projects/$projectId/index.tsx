@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import ProjectOverviewPage from '@/features/project/ProjectOverviewPage';
 
 export const Route = createFileRoute('/app/projects/$projectId/')({
+  ssr: false,
   component: ProjectOverviewRoute,
 });
 

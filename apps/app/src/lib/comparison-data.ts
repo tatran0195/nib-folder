@@ -262,7 +262,7 @@ export const nibleafVsMintlify: Comparison = {
     },
     {
       feature: 'Built-in privacy-friendly analytics',
-      nibleaf: yes('Product analytics; Cloudflare also processes hosted traffic'),
+      nibleaf: yes('First-party product analytics built in'),
       competitor: partial('“Advanced insights” is listed under Enterprise'),
     },
     {
@@ -327,7 +327,7 @@ export const nibleafVsMintlify: Comparison = {
       'You want a browser editor over exportable Markdown and prefer either a managed beta or a public full-stack Compose deployment.',
       'Your writers prefer a Notion-style WYSIWYG editor over editing MDX files — while the content stays plain Markdown.',
       'You want an RTL-aware editor and dedicated Arabic search behavior in addition to localized navigation and reader layout.',
-      'You want built-in reader analytics and accept Cloudflare processing on the managed service.',
+      'You want built-in reader analytics on the managed service.',
       'You want plain-Markdown export and the option to run the full stack from public source and container artifacts.',
     ],
   },

@@ -124,8 +124,7 @@ const integrationPublicConfigSchema = z.discriminatedUnion('providerId', [
   z.object({ providerId: z.literal('qdrant'), collectionAlias: z.string(), searchRuntime: z.enum(['legacy', 'shadow', 'hybrid']) }).strict(),
   z.object({ providerId: z.literal('postmark'), messageStream: z.string().nullable() }).strict(),
   z.object({ providerId: z.literal('smtp') }).strict(),
-  z.object({ providerId: z.enum(['maxio', 'minio', 'amazon-s3', 'cloudflare-r2', 'backblaze-b2']) }).strict(),
-  z.object({ providerId: z.literal('cloudflare'), workerScript: z.string() }).strict(),
+  z.object({ providerId: z.enum(['maxio', 'minio', 'amazon-s3', 'backblaze-b2']) }).strict(),
 ]);
 
 /** Strict secret-free persisted replay DTO. Adding a new provider requires an
