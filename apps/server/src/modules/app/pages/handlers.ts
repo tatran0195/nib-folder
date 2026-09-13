@@ -1,7 +1,7 @@
+import { createPage, deletePage, getPage, listPages, reorderPages, updatePage } from '@nibleaf/content';
+import { assertProjectInOrg } from '@nibleaf/projects';
 import { createPageBody, listPagesQuery, reorderPagesBody, updatePageBody } from '@nibleaf/validators';
 import { Hono } from 'hono';
-import { createPage, deletePage, getPage, listPages, reorderPages, updatePage } from '@/actions/pages';
-import { assertProjectInOrg } from '@/actions/projects';
 import { getContextOrganizationIdOrThrow, getContextUserOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import pagesRoutes from './routes';

@@ -1,6 +1,3 @@
-import { createDeploymentBody } from '@nibleaf/validators';
-import { Hono } from 'hono';
-import { z } from 'zod';
 import {
   createDeployment,
   getDeployment,
@@ -9,8 +6,11 @@ import {
   getPendingChanges,
   listDeployments,
   rollbackDeployment,
-} from '@/actions/deployments';
-import { assertProjectInOrg } from '@/actions/projects';
+} from '@nibleaf/deployments';
+import { assertProjectInOrg } from '@nibleaf/projects';
+import { createDeploymentBody } from '@nibleaf/validators';
+import { Hono } from 'hono';
+import { z } from 'zod';
 import { getContextLocale, getContextOrganizationIdOrThrow, getContextUserOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import { firstPublishAttribution } from '../activation-events/schema';

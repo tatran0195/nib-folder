@@ -1,28 +1,3 @@
-import { Hono } from 'hono';
-import { contextStorage } from 'hono/context-storage';
-import { requestId } from 'hono/request-id';
-import { env } from './env';
-import { AppError } from './errors';
-import { errorMiddleware } from './errors/handler';
-import { protectPrivateDeliveryFailureResponse } from './lib/delivery-cache';
-import type { HonoEnv } from './lib/hono/context';
-import middlewares from './middlewares/app';
-import { observabilityMiddleware } from './middlewares/observability';
+import app from './app';
 
-const baseApp = new Hono<HonoEnv>({ strict: false });
-
-baseApp.use('*', requestId());
-baseApp.use(contextStorage());
-baseApp.use('*', observabilityMiddleware());
-
-baseApp.route('/', middlewares);
-
-baseApp.notFound((ctx) => {
-  throw new AppError({ code: 'http:not_found', details: { route: ctx.req.url } });
-});
-
-baseApp.onError((err, ctx) =>
-  protectPrivateDeliveryFailureResponse(ctx.req.path, errorMiddleware({ isDevelopment: env.NODE_ENV !== 'production' })(err, ctx)),
-);
-
-export default baseApp;
+export default app;

@@ -1,9 +1,9 @@
+import { mapPrismaError } from '@nibleaf/core';
 import { logger } from '@nibleaf/logger';
 import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { AppError } from './index';
-import { mapPrismaError } from '@/core/error-mapper';
 
 interface ErrorMiddlewareOptions {
   isDevelopment: boolean;
@@ -30,33 +30,46 @@ const codeForStatus = (status: number) => {
   }
 };
 
-import { mapPrismaError } from '@/core/error-mapper';
-
 /** Global error handler: converts AppError / HTTPException / unknown into JSON responses. */
 export const errorMiddleware =
   ({ isDevelopment }: ErrorMiddlewareOptions) =>
   (err: Error, ctx: Context) => {
     const error = mapPrismaError(err) ?? err;
+    const requestId = (ctx.get as (key: string) => string | undefined)?.('requestId');
 
     if (error instanceof AppError) {
       if (error.status >= 500) {
-        logger.error({ err: error, code: error.code }, 'AppError (server)');
+        logger.error({ err: error, code: error.code, requestId }, 'AppError (server)');
       } else {
-        logger.debug({ code: error.code, message: error.message }, 'AppError (client)');
+        logger.debug({ code: error.code, message: error.message, requestId }, 'AppError (client)');
       }
-      return ctx.json(error.toJSON(), error.status);
+      const json = error.toJSON();
+      if (requestId) {
+        json.error = { ...json.error, requestId } as typeof json.error & { requestId: string };
+      }
+      return ctx.json(json, error.status);
     }
 
     if (err instanceof HTTPException) {
-      return ctx.json({ error: { code: codeForStatus(err.status), message: err.message } }, err.status);
+      return ctx.json(
+        {
+          error: {
+            code: codeForStatus(err.status),
+            message: err.message,
+            ...(requestId ? { requestId } : {}),
+          },
+        },
+        err.status,
+      );
     }
 
-    logger.error({ err }, 'Unhandled error');
+    logger.error({ err, requestId }, 'Unhandled error');
     return ctx.json(
       {
         error: {
           code: 'http:internal',
           message: isDevelopment && err instanceof Error ? err.message : 'Internal server error',
+          ...(requestId ? { requestId } : {}),
           ...(isDevelopment && err instanceof Error ? { stack: err.stack } : {}),
         },
       },

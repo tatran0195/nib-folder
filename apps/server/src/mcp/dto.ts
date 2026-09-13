@@ -1,9 +1,7 @@
-import { listBranches } from '@/actions/branches';
-import { getDeployment, getPendingChanges, listDeployments } from '@/actions/deployments';
-import { getExport, listExports } from '@/actions/exports';
-import { listLanguages } from '@/actions/languages';
-import { getPage, listPages } from '@/actions/pages';
-import { getProject } from '@/actions/projects';
+import { getPage, listPages } from '@nibleaf/content';
+import { getDeployment, getPendingChanges, listDeployments } from '@nibleaf/deployments';
+import { getExport, listExports } from '@nibleaf/exports';
+import { getProject, listBranches, listLanguages } from '@nibleaf/projects';
 
 const iso = (value: Date | null | undefined) => value?.toISOString() ?? null;
 

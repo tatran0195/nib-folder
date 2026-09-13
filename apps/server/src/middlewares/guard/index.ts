@@ -1,8 +1,8 @@
 import { prisma } from '@nibleaf/database';
+import { assertProjectAccess } from '@nibleaf/projects';
 import type { MemberRole } from '@nibleaf/shared/constants';
 import { roleAtLeast } from '@nibleaf/shared/rbac';
 import type { Context, MiddlewareHandler } from 'hono';
-import { assertProjectAccess } from '@/actions/projects';
 import { AppError } from '@/errors';
 import type { HonoEnv } from '@/lib/hono/context';
 

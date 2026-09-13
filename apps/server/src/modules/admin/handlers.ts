@@ -1,7 +1,5 @@
-import { adminSetRoleBody } from '@nibleaf/validators';
-import { Hono } from 'hono';
-import { z } from 'zod';
 import {
+  getActivationFunnel,
   getAdminOperations,
   getAdminOverview,
   getAdminSite,
@@ -14,8 +12,10 @@ import {
   suspendUser,
   takedownProject,
   unsuspendUser,
-} from '@/actions/admin';
-import { getActivationFunnel } from '@/actions/platform-events';
+} from '@nibleaf/projects';
+import { adminSetRoleBody } from '@nibleaf/validators';
+import { Hono } from 'hono';
+import { z } from 'zod';
 import type { HonoEnv } from '@/lib/hono/context';
 import { getContextUserOrThrow } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';

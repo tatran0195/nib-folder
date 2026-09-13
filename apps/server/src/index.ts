@@ -2,14 +2,12 @@ import './lib/serialize-bigint';
 
 // trigger bun reload
 import { type ServerType, serve } from '@hono/node-server';
-import { auth } from '@nibleaf/auth/server';
 import { closeQueues } from '@nibleaf/bullmq';
 import { logger } from '@nibleaf/logger';
 import { configureUploadCors, ensureBucket } from '@nibleaf/storage';
-import { Scalar } from '@scalar/hono-api-reference';
-import { openAPIRouteHandler } from 'hono-openapi';
+import { createApp } from './create-app';
 import { env } from './env';
-import app from './routes';
+import { OPEN_MODULES } from './modules/registry';
 
 // Fail fast on unhandled async/sync errors rather than running in an undefined state.
 process.on('unhandledRejection', (reason) => {
@@ -21,59 +19,34 @@ process.on('uncaughtException', (error) => {
   process.exit(1);
 });
 
-let server: ServerType | null = null;
+let bunServer: { port?: number; stop: (closeActiveConnections?: boolean) => void | Promise<void> } | null = null;
+let nodeServer: ServerType | null = null;
 let shuttingDown = false;
 let ready = false;
 
-app.get(
-  '/openapi.json',
-  openAPIRouteHandler(app, {
-    documentation: {
-      info: { title: 'Nibleaf API', version: '0.1.1', description: 'Open-source documentation platform.' },
-      servers: [{ url: env.API_URL, description: 'Nibleaf API' }],
-    },
-  }),
-);
-
-app.get('/docs', Scalar({ theme: 'default', sources: [{ url: '/openapi.json', title: 'Nibleaf API' }] }));
-
-app.get('/health', async (ctx) => {
-  const status = shuttingDown ? 'shutting_down' : ready ? 'ok' : 'starting';
-  return ctx.json({ status, service: env.SERVICE_NAME, revision: process.env.NIBLEAF_REVISION ?? 'development' }, ready && !shuttingDown ? 200 : 503);
-});
-
-app.get('/api/dev-login', async (ctx) => {
-  if (env.NODE_ENV === 'production') {
-    return ctx.text('Not allowed in production', 403);
-  }
-  const otp = await auth.api.createVerificationOTP({ body: { email: 'demo@nibleaf.test', type: 'sign-in' } });
-  const res = await auth.api.signInEmailOTP({ body: { email: 'demo@nibleaf.test', otp }, asResponse: true });
-  const cookie = res.headers.get('set-cookie');
-  if (cookie) {
-    ctx.header('set-cookie', cookie);
-  }
-  return ctx.redirect(new URL('/app', env.APP_URL).toString(), 302);
-});
-
-app.get('/dev-login', async (ctx) => {
-  if (env.NODE_ENV === 'production') {
-    return ctx.text('Not allowed in production', 403);
-  }
-  const otp = await auth.api.createVerificationOTP({ body: { email: 'demo@nibleaf.test', type: 'sign-in' } });
-  const res = await auth.api.signInEmailOTP({ body: { email: 'demo@nibleaf.test', otp }, asResponse: true });
-  const cookie = res.headers.get('set-cookie');
-  if (cookie) {
-    ctx.header('set-cookie', cookie);
-  }
-  return ctx.redirect(new URL('/app', env.APP_URL).toString(), 302);
+export const app = createApp(OPEN_MODULES, {
+  isShuttingDown: () => shuttingDown,
+  isReady: () => ready,
 });
 
 async function main() {
-  server = serve({ port: env.API_PORT, fetch: app.fetch }, (info) => {
-    logger.info(`Nibleaf API on http://localhost:${info.port}`);
-    logger.info(`  docs   → http://localhost:${info.port}/docs`);
-    logger.info(`  health → http://localhost:${info.port}/health`);
-  });
+  if (typeof Bun !== 'undefined') {
+    const bun = Bun.serve({
+      port: env.API_PORT,
+      fetch: app.fetch,
+    });
+    bunServer = bun;
+    const port = bun.port ?? env.API_PORT;
+    logger.info(`Nibleaf API (Bun) on http://localhost:${port}`);
+    logger.info(`  docs   → http://localhost:${port}/docs`);
+    logger.info(`  health → http://localhost:${port}/health`);
+  } else {
+    nodeServer = serve({ port: env.API_PORT, fetch: app.fetch }, (info) => {
+      logger.info(`Nibleaf API on http://localhost:${info.port}`);
+      logger.info(`  docs   → http://localhost:${info.port}/docs`);
+      logger.info(`  health → http://localhost:${info.port}/health`);
+    });
+  }
 
   // Best-effort storage bootstrap: create the bucket + allow browser uploads.
   await ensureBucket().catch((error) => logger.warn({ error }, 'ensureBucket failed (continuing)'));
@@ -95,17 +68,19 @@ async function shutdown(signal: string) {
   ready = false;
   logger.info({ signal }, 'shutting down API');
 
-  const activeServer = server;
-  if (activeServer) {
+  if (bunServer) {
+    bunServer.stop();
+  }
+  if (nodeServer) {
     let timeout: NodeJS.Timeout | undefined;
     await Promise.race([
       new Promise<void>((resolve, reject) => {
-        activeServer.close((error) => (error ? reject(error) : resolve()));
+        nodeServer?.close((error) => (error ? reject(error) : resolve()));
       }),
       new Promise<void>((resolve) => {
         timeout = setTimeout(() => {
           logger.warn({ timeoutMs: env.SERVER_SHUTDOWN_TIMEOUT_MS }, 'API drain timed out; closing active connections');
-          (activeServer as typeof activeServer & { closeAllConnections?: () => void }).closeAllConnections?.();
+          (nodeServer as typeof nodeServer & { closeAllConnections?: () => void })?.closeAllConnections?.();
           resolve();
         }, env.SERVER_SHUTDOWN_TIMEOUT_MS);
         timeout.unref();
@@ -137,3 +112,5 @@ main().catch((error) => {
   logger.error({ error }, 'fatal API startup error');
   process.exit(1);
 });
+
+export default app;

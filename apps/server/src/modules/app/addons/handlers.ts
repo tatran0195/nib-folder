@@ -1,5 +1,3 @@
-import { listProjectAddonAuditQuery, mutateProjectAddonBody, updateProjectAddonBody } from '@nibleaf/validators';
-import { Hono } from 'hono';
 import {
   activateProjectAddon,
   deactivateProjectAddon,
@@ -7,7 +5,9 @@ import {
   listProjectAddonAuditEvents,
   listProjectAddons,
   updateProjectAddon,
-} from '@/actions/addons';
+} from '@nibleaf/addons';
+import { listProjectAddonAuditQuery, mutateProjectAddonBody, updateProjectAddonBody } from '@nibleaf/validators';
+import { Hono } from 'hono';
 import type { HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import routes from './routes';

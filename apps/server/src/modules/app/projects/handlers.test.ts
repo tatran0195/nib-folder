@@ -18,12 +18,12 @@ vi.mock('@nibleaf/database', () => ({
   },
 }));
 
-vi.mock('@/actions/export', () => ({
+vi.mock('@nibleaf/exports', () => ({
   exportProjectMarkdown: vi.fn(),
   exportProjectThemeRepository: mocks.exportProjectThemeRepository,
 }));
 
-vi.mock('@/actions/projects', () => ({
+vi.mock('@nibleaf/projects', () => ({
   assertProjectAccess: vi.fn(async () => {
     if (!mocks.member) {
       const { AppError } = await import('@/errors');
@@ -36,9 +36,6 @@ vi.mock('@/actions/projects', () => ({
   getProject: vi.fn(),
   listProjects: vi.fn(),
   updateProject: vi.fn(),
-}));
-
-vi.mock('@/actions/themes', () => ({
   exportProjectTheme: vi.fn(),
   getProjectThemeCatalog: mocks.getProjectThemeCatalog,
   importProjectTheme: vi.fn(),

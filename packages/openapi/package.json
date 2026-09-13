@@ -1,0 +1,33 @@
+{
+  "name": "@nibleaf/openapi",
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "description": "OpenAPI 3.x document parsing, validation, reference bundling, and interactive docs",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@nibleaf/database": "workspace:*",
+    "@nibleaf/projects": "workspace:*",
+    "@nibleaf/shared": "workspace:*",
+    "@nibleaf/validators": "workspace:*",
+    "@scalar/json-magic": "0.13.3",
+    "@scalar/openapi-parser": "^0.29.0",
+    "got": "16.0.0",
+    "yaml": "2.9.0",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@nibleaf/tsconfig": "workspace:*",
+    "@types/node": "^22.20.1",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}

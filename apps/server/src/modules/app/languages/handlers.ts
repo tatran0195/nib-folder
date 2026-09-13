@@ -1,7 +1,6 @@
+import { assertProjectInOrg, createLanguage, deleteLanguage, listLanguagesWithCoverage, updateLanguage } from '@nibleaf/projects';
 import { createLanguageBody, updateLanguageBody } from '@nibleaf/validators';
 import { Hono } from 'hono';
-import { createLanguage, deleteLanguage, listLanguagesWithCoverage, updateLanguage } from '@/actions/languages';
-import { assertProjectInOrg } from '@/actions/projects';
 import { getContextOrganizationIdOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import languagesRoutes from './routes';

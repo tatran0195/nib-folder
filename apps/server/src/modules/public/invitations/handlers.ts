@@ -1,5 +1,5 @@
+import { getInvitationInfo } from '@nibleaf/projects';
 import { Hono } from 'hono';
-import { getInvitationInfo } from '@/actions/members';
 import type { HonoEnv } from '@/lib/hono/context';
 import invitationsRoutes from './routes';
 

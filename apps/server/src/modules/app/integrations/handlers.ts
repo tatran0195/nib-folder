@@ -1,4 +1,16 @@
 import {
+  activateProjectIntegration,
+  createIntegrationDeleteConfirmation,
+  createProjectIntegration,
+  deactivateProjectIntegration,
+  deleteProjectIntegration,
+  getProjectIntegration,
+  listProjectIntegrations,
+  updateProjectIntegration,
+  verifyProjectIntegration,
+} from '@nibleaf/integrations';
+import { AppError } from '@nibleaf/shared/errors';
+import {
   configurableIntegrationProviderIdSchema,
   createIntegrationDeleteConfirmationBody,
   createProjectIntegrationBody,
@@ -9,18 +21,6 @@ import {
   verifyProjectIntegrationBody,
 } from '@nibleaf/validators';
 import { Hono } from 'hono';
-import {
-  activateProjectIntegration,
-  createIntegrationDeleteConfirmation,
-  createProjectIntegration,
-  deactivateProjectIntegration,
-  deleteProjectIntegration,
-  getProjectIntegration,
-  listProjectIntegrations,
-  updateProjectIntegration,
-  verifyProjectIntegration,
-} from '@/actions/integrations';
-import { AppError } from '@/errors';
 import type { HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import routes from './routes';

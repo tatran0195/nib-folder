@@ -2,6 +2,7 @@
   "extends": "@nibleaf/tsconfig/hono.json",
   "compilerOptions": {
     "jsx": "react-jsx",
+    "types": ["node", "bun"],
     "paths": {
       "@/*": ["./src/*"]
     }

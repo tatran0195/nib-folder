@@ -1,0 +1,40 @@
+{
+  "name": "@nibleaf/integrations",
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "description": "Project integrations, webhooks, and provider verifications (Avkash architecture)",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./crypto": "./src/crypto.ts",
+    "./providers": "./src/providers.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@nibleaf/database": "workspace:*",
+    "@nibleaf/git": "workspace:*",
+    "@nibleaf/i18n": "workspace:*",
+    "@nibleaf/logger": "workspace:*",
+    "@nibleaf/projects": "workspace:*",
+    "@nibleaf/qdrant": "workspace:*",
+    "@nibleaf/search": "workspace:*",
+    "@nibleaf/shared": "workspace:*",
+    "@nibleaf/storage": "workspace:*",
+    "@nibleaf/validators": "workspace:*",
+    "@slack/webhook": "8.0.2",
+    "got": "16.0.0",
+    "hono": "^4.7.4",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@nibleaf/tsconfig": "workspace:*",
+    "@types/node": "^22.20.1",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}

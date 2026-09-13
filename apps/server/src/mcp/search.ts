@@ -1,7 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/server';
+import { getProjectSearchConfiguration, getProjectSearchIndexDiagnostics } from '@nibleaf/projects';
 import { searchConfigurationResultSchema, searchIndexDiagnosticsQuery } from '@nibleaf/validators';
 import type { Context } from 'hono';
-import { getProjectSearchConfiguration, getProjectSearchIndexDiagnostics } from '@/actions/search';
 import type { HonoEnv } from '@/lib/hono/context';
 import { runMcpReadTool, runMcpResource } from './result';
 import type { McpPrincipal } from './types';

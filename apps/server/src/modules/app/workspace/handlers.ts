@@ -1,6 +1,6 @@
+import { getWorkspaceSettings, updateWorkspaceSettings } from '@nibleaf/projects';
 import { updateWorkspaceSettingsBody } from '@nibleaf/validators';
 import { Hono } from 'hono';
-import { getWorkspaceSettings, updateWorkspaceSettings } from '@/actions/workspace';
 import { getContextOrganizationIdOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import workspaceRoutes from './routes';

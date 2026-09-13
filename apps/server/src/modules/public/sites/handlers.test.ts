@@ -5,7 +5,7 @@ import type { HonoEnv } from '@/lib/hono/context';
 
 const mocks = vi.hoisted(() => ({ getSiteOpenApi: vi.fn(), getSiteChangelogRss: vi.fn(), getSitePageMarkdown: vi.fn(), answerSite: vi.fn() }));
 
-vi.mock('@/actions/sites', () => ({
+vi.mock('@nibleaf/deployments', () => ({
   getSite: vi.fn(),
   getSitePage: vi.fn(),
   getSitePageMarkdown: mocks.getSitePageMarkdown,

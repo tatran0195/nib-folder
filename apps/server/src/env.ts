@@ -1,6 +1,8 @@
 import { keys as auth } from '@nibleaf/auth/keys.server';
 import { keys as bullmq } from '@nibleaf/bullmq/keys';
+import { keys as content } from '@nibleaf/content/keys';
 import { keys as database } from '@nibleaf/database/keys';
+import { keys as projects } from '@nibleaf/projects/keys';
 import { keys as qdrant } from '@nibleaf/qdrant/keys';
 import { keys as search } from '@nibleaf/search/keys';
 import { keys as storage } from '@nibleaf/storage/keys';
@@ -15,7 +17,7 @@ const csv = (value: string): string[] =>
     .filter(Boolean);
 
 export const env = createEnv({
-  extends: [auth(), bullmq(), database(), qdrant(), search(), storage()],
+  extends: [auth(), bullmq(), content(), database(), projects(), qdrant(), search(), storage()],
   server: {
     NODE_ENV: z.enum(Env).default('development'),
     APP_NAME: z.string().default('Nibleaf'),

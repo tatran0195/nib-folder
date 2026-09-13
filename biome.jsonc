@@ -117,6 +117,7 @@
     "indentWidth": 2
   },
   "javascript": {
+    "globals": ["Bun"],
     "formatter": {
       "trailingCommas": "all",
       "quoteStyle": "single"

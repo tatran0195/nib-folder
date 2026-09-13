@@ -1,8 +1,8 @@
 import { prisma } from '@nibleaf/database';
+import { assertProjectInOrg } from '@nibleaf/projects';
 import { createCommentBody, resolveCommentBody } from '@nibleaf/validators';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { assertProjectInOrg } from '@/actions/projects';
 import { notFound } from '@/errors';
 import { getContextOrganizationIdOrThrow, getContextUserOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';

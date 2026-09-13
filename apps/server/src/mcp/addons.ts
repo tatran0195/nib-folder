@@ -1,8 +1,8 @@
 import type { McpServer } from '@modelcontextprotocol/server';
+import { getProjectAddon, listProjectAddonAuditEvents, listProjectAddons } from '@nibleaf/addons';
 import { addonIdSchema, type ListProjectAddonAuditQuery, listProjectAddonAuditQuery } from '@nibleaf/validators/addons';
 import type { Context } from 'hono';
 import { z } from 'zod';
-import { getProjectAddon, listProjectAddonAuditEvents, listProjectAddons } from '@/actions/addons';
 import type { HonoEnv } from '@/lib/hono/context';
 import { runMcpReadTool, runMcpResource } from './result';
 import type { McpPrincipal } from './types';

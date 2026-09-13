@@ -1,8 +1,4 @@
 import { prisma } from '@nibleaf/database';
-import { MemberRole } from '@nibleaf/shared/constants';
-import { roleAtLeast } from '@nibleaf/shared/rbac';
-import { gitAuthorizationBody, gitConflictResolutionBody, gitConnectionBody, gitOperationBody } from '@nibleaf/validators';
-import { Hono } from 'hono';
 import {
   authorizeGitHub,
   connectGitHub,
@@ -10,7 +6,11 @@ import {
   queueGitOperation,
   resolveGitConflict,
   rotateConnectionWebhookSecret,
-} from '@/actions/git/workflow';
+} from '@nibleaf/git';
+import { MemberRole } from '@nibleaf/shared/constants';
+import { roleAtLeast } from '@nibleaf/shared/rbac';
+import { gitAuthorizationBody, gitConflictResolutionBody, gitConnectionBody, gitOperationBody } from '@nibleaf/validators';
+import { Hono } from 'hono';
 import { getContextMembership, getContextUserOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import routes from './routes';

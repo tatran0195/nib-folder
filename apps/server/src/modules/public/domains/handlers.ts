@@ -1,6 +1,6 @@
+import { resolveDomainHost } from '@nibleaf/deployments';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { resolveDomainHost } from '@/actions/sites';
 import type { HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import domainsRoutes from './routes';

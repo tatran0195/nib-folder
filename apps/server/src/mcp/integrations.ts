@@ -1,10 +1,10 @@
 import type { McpServer } from '@modelcontextprotocol/server';
+import { getGitWorkspaceStatus } from '@nibleaf/git';
+import { getProjectIntegration, listProjectIntegrations } from '@nibleaf/integrations';
 import type { IntegrationCatalogEntry, IntegrationConnectionSummary } from '@nibleaf/shared/integrations';
 import { integrationProviderIdSchema } from '@nibleaf/validators';
 import type { Context } from 'hono';
 import { z } from 'zod';
-import { getGitWorkspaceStatus } from '@/actions/git/workflow';
-import { getProjectIntegration, listProjectIntegrations } from '@/actions/integrations';
 import type { HonoEnv } from '@/lib/hono/context';
 import { runMcpReadTool, runMcpResource } from './result';
 import type { McpPrincipal } from './types';

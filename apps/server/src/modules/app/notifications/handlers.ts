@@ -1,6 +1,6 @@
+import { getUnreadNotificationCount, listNotifications, markNotificationsRead } from '@nibleaf/projects';
 import { markNotificationsReadBody, notificationsListQuery } from '@nibleaf/validators';
 import { Hono } from 'hono';
-import { getUnreadNotificationCount, listNotifications, markNotificationsRead } from '@/actions/notifications';
 import { getContextUserOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import notificationsRoutes from './routes';

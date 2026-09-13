@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream';
+import { getProjectDeliveryAccess, isProjectTakenDown } from '@nibleaf/deployments';
 import { getObjectStream, headObject } from '@nibleaf/storage';
 import { Hono } from 'hono';
-import { getProjectDeliveryAccess, isProjectTakenDown } from '@/actions/sites';
 import { notFound } from '@/errors';
 import { publicAssetResponseHeaders } from '@/lib/asset-response';
 import { deliveryCacheHeaders } from '@/lib/delivery-cache';

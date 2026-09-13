@@ -1,6 +1,6 @@
+import { activateReaderInvitation, jwtReaderHandoff, logoutReader } from '@nibleaf/deployments';
 import { readerActivationQuery, readerJwtHandoffBody } from '@nibleaf/validators';
 import { Hono } from 'hono';
-import { activateReaderInvitation, jwtReaderHandoff, logoutReader } from '@/actions/reader-access';
 import { env } from '@/env';
 import { badRequest } from '@/errors';
 import type { HonoEnv } from '@/lib/hono/context';

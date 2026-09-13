@@ -1,8 +1,8 @@
+import { draftContentWithTelemetry } from '@nibleaf/content';
+import { assertProjectInOrg } from '@nibleaf/projects';
 import { aiDraftBody } from '@nibleaf/validators';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { draftContentWithTelemetry } from '@/actions/ai';
-import { assertProjectInOrg } from '@/actions/projects';
 import { assertAiQuota } from '@/lib/ai-quota';
 import { getContextOrganizationIdOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';

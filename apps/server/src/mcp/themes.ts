@@ -1,7 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/server';
+import { exportProjectTheme, getProjectThemeCatalog, importProjectTheme } from '@nibleaf/projects';
 import { themeImportBodySchema } from '@nibleaf/validators';
 import type { Context } from 'hono';
-import { exportProjectTheme, getProjectThemeCatalog, importProjectTheme } from '@/actions/themes';
 import type { HonoEnv } from '@/lib/hono/context';
 import { runMcpReadTool, runMcpResource } from './result';
 import type { McpPrincipal } from './types';

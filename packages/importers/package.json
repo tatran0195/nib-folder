@@ -1,0 +1,38 @@
+{
+  "name": "@nibleaf/importers",
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "description": "Content import subsystem for Ghost and Mintlify into Nibleaf (Avkash architecture)",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@nibleaf/content": "workspace:*",
+    "@nibleaf/database": "workspace:*",
+    "@nibleaf/git": "workspace:*",
+    "@nibleaf/i18n": "workspace:*",
+    "@nibleaf/projects": "workspace:*",
+    "@nibleaf/shared": "workspace:*",
+    "@nibleaf/storage": "workspace:*",
+    "@nibleaf/validators": "workspace:*",
+    "@tryghost/kg-lexical-html-renderer": "1.5.0",
+    "@tryghost/kg-mobiledoc-html-renderer": "7.2.3",
+    "got": "16.0.0",
+    "turndown": "^7.2.4",
+    "turndown-plugin-gfm": "^1.0.2",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@nibleaf/tsconfig": "workspace:*",
+    "@types/node": "^22.20.1",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}

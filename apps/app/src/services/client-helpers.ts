@@ -6,10 +6,16 @@ interface ApiErrorBody {
   };
 }
 
-type ResponseData<TResponse extends Response> = Awaited<ReturnType<TResponse['json']>> extends { data: infer TData } ? TData : never;
-type ResolvedData<TData, TResponse extends Response> = [TData] extends [never] ? ResponseData<TResponse> : TData;
+export type ApiResponseLike = {
+  ok: boolean;
+  status: number;
+  json: () => Promise<unknown>;
+};
 
-const readApiError = async (res: Response, fallback: string) => {
+type ResponseData<TResponse extends ApiResponseLike> = Awaited<ReturnType<TResponse['json']>> extends { data: infer TData } ? TData : never;
+type ResolvedData<TData, TResponse extends ApiResponseLike> = [TData] extends [never] ? ResponseData<TResponse> : TData;
+
+const readApiError = async (res: ApiResponseLike, fallback: string) => {
   try {
     const body = (await res.json()) as ApiErrorBody;
     const message = body.error?.message ?? fallback;
@@ -40,19 +46,21 @@ export class ApiResponseError extends Error {
   }
 }
 
-export async function getData<TData = never, TResponse extends Response = Response>(res: TResponse, what: string, fallback?: string) {
+export async function getData<TData = never, TResponse extends ApiResponseLike = ApiResponseLike>(res: TResponse, what: string, fallback?: string) {
   if (!res.ok) {
     const error = await readApiError(res, fallback ?? `Failed to load ${what}.`);
     throw new ApiResponseError(error.message, res.status, error.code);
   }
-  return (await res.json()).data as ResolvedData<TData, TResponse>;
+  const body = (await res.json()) as { data: ResolvedData<TData, TResponse> };
+  return body.data;
 }
 
 /** Unwrap a `{ data }` envelope for a mutation, throwing a readable error. */
-export async function mutateData<TData = never, TResponse extends Response = Response>(res: TResponse, fallback: string) {
+export async function mutateData<TData = never, TResponse extends ApiResponseLike = ApiResponseLike>(res: TResponse, fallback: string) {
   if (!res.ok) {
     const error = await readApiError(res, fallback);
     throw new ApiResponseError(error.message, res.status, error.code);
   }
-  return (await res.json()).data as ResolvedData<TData, TResponse>;
+  const body = (await res.json()) as { data: ResolvedData<TData, TResponse> };
+  return body.data;
 }

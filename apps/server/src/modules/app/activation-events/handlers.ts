@@ -1,5 +1,5 @@
+import { recordFirstPublishStage } from '@nibleaf/projects';
 import { Hono } from 'hono';
-import { recordFirstPublishStage } from '@/actions/platform-events';
 import { getContextUserOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import activationEventRoutes from './routes';

@@ -1,0 +1,29 @@
+{
+  "name": "@nibleaf/core",
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "description": "Core application factory, modular routing, optimistic concurrency, DTO serialization, context, and error mapping (Avkash architecture)",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@nibleaf/database": "workspace:*",
+    "@nibleaf/i18n": "workspace:*",
+    "@nibleaf/shared": "workspace:*",
+    "hono": "^4.13.5",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@nibleaf/tsconfig": "workspace:*",
+    "@types/node": "^22.20.1",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}

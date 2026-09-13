@@ -18,7 +18,7 @@ vi.mock('@nibleaf/database', () => ({
   },
 }));
 
-vi.mock('@/actions/openapi', () => ({
+vi.mock('@nibleaf/openapi', () => ({
   getOpenApiDocument: mocks.getOpenApiDocument,
   upsertOpenApiDocument: mocks.upsertOpenApiDocument,
   syncOpenApiDocument: vi.fn(),

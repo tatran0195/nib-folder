@@ -1,6 +1,6 @@
+import { deleteOpenApiDocument, getOpenApiDocument, syncOpenApiDocument, upsertOpenApiDocument } from '@nibleaf/openapi';
 import { upsertOpenApiBody } from '@nibleaf/validators';
 import { Hono } from 'hono';
-import { deleteOpenApiDocument, getOpenApiDocument, syncOpenApiDocument, upsertOpenApiDocument } from '@/actions/openapi';
 import { getContextOrganizationIdOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import openApiRoutes from './routes';

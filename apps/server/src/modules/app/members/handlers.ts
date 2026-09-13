@@ -1,6 +1,6 @@
+import { cancelInvitation, inviteMember, listMembers, removeMember, updateMemberRole } from '@nibleaf/projects';
 import { inviteMemberBody, updateMemberRoleBody } from '@nibleaf/validators';
 import { Hono } from 'hono';
-import { cancelInvitation, inviteMember, listMembers, removeMember, updateMemberRole } from '@/actions/members';
 import {
   getContextLocale,
   getContextMembershipOrThrow,

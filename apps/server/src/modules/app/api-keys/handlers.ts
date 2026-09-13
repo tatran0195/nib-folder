@@ -1,7 +1,7 @@
+import { createApiKey, listApiKeys, revokeApiKey, rotateApiKey } from '@nibleaf/projects';
 import { createApiKeyBody, rotateApiKeyBody } from '@nibleaf/validators';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { createApiKey, listApiKeys, revokeApiKey, rotateApiKey } from '@/actions/api-keys';
 import { getContextOrganizationIdOrThrow, getContextUserOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import apiKeysRoutes from './routes';

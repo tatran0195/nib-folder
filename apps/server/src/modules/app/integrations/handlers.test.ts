@@ -25,7 +25,7 @@ vi.mock('@nibleaf/database', () => ({
   },
 }));
 
-vi.mock('@/actions/integrations', () => ({
+vi.mock('@nibleaf/integrations', () => ({
   activateProjectIntegration: mocks.activate,
   createIntegrationDeleteConfirmation: mocks.createDeleteConfirmation,
   createProjectIntegration: mocks.create,

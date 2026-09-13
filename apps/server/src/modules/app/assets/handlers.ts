@@ -1,7 +1,7 @@
+import { confirmAsset, listAssets, presignAsset } from '@nibleaf/content';
+import { assertProjectInOrg } from '@nibleaf/projects';
 import { confirmAssetBody, presignAssetBody } from '@nibleaf/validators';
 import { Hono } from 'hono';
-import { confirmAsset, listAssets, presignAsset } from '@/actions/assets';
-import { assertProjectInOrg } from '@/actions/projects';
 import { getContextOrganizationIdOrThrow, getContextUserOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import assetsRoutes from './routes';

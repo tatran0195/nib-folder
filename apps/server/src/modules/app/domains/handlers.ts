@@ -1,7 +1,6 @@
+import { addDomain, assertProjectInOrg, deleteDomain, listDomains, setPrimaryDomain, verifyDomain } from '@nibleaf/projects';
 import { addDomainBody } from '@nibleaf/validators';
 import { Hono } from 'hono';
-import { addDomain, deleteDomain, listDomains, setPrimaryDomain, verifyDomain } from '@/actions/domains';
-import { assertProjectInOrg } from '@/actions/projects';
 import { getContextOrganizationIdOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import domainsRoutes from './routes';

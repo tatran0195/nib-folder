@@ -1,18 +1,18 @@
+import { importFromGitProvider, rotateGitWebhookSecret } from '@nibleaf/git';
+import {
+  createNotificationsForOrgMembers,
+  createProjectSearchReindex,
+  getProjectSearchConfiguration,
+  getProjectSearchIndexDiagnostics,
+  getWorkspaceSettings,
+  updateProjectSearchConfiguration,
+  updateWorkspaceSettings,
+} from '@nibleaf/projects';
 import { MemberRole } from '@nibleaf/shared/constants';
 import { roleAtLeast } from '@nibleaf/shared/rbac';
 import { searchIndexDiagnosticsQuery, updateProjectSearchConfigurationBody, updateWorkspaceSettingsBody } from '@nibleaf/validators';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { importFromGitProvider } from '@/actions/git-import';
-import { rotateGitWebhookSecret } from '@/actions/git-webhook';
-import { createNotificationsForOrgMembers } from '@/actions/notifications';
-import {
-  createProjectSearchReindex,
-  getProjectSearchConfiguration,
-  getProjectSearchIndexDiagnostics,
-  updateProjectSearchConfiguration,
-} from '@/actions/search';
-import { getWorkspaceSettings, updateWorkspaceSettings } from '@/actions/workspace';
 import { getContextMembership, getContextOrganizationIdOrThrow, getContextUserOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import projectSettingsRoutes from './routes';

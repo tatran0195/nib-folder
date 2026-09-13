@@ -1,0 +1,29 @@
+{
+  "name": "@nibleaf/addons",
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "description": "Project add-on provisioning, capability resolution, and audit ledger (Avkash architecture)",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@nibleaf/database": "workspace:*",
+    "@nibleaf/projects": "workspace:*",
+    "@nibleaf/shared": "workspace:*",
+    "@nibleaf/validators": "workspace:*",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@nibleaf/tsconfig": "workspace:*",
+    "@types/node": "^22.20.1",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}

@@ -1,14 +1,4 @@
 import {
-  createAudienceBody,
-  inviteReaderBody,
-  jwtAccessConfigBody,
-  projectAccessModeBody,
-  readerJwtHandoffBody,
-  updateAudienceBody,
-  updateReaderBody,
-} from '@nibleaf/validators';
-import { Hono } from 'hono';
-import {
   configureJwtAccess,
   createAudience,
   deleteAudience,
@@ -20,7 +10,17 @@ import {
   testJwtAccess,
   updateAudience,
   updateReader,
-} from '@/actions/reader-access';
+} from '@nibleaf/deployments';
+import {
+  createAudienceBody,
+  inviteReaderBody,
+  jwtAccessConfigBody,
+  projectAccessModeBody,
+  readerJwtHandoffBody,
+  updateAudienceBody,
+  updateReaderBody,
+} from '@nibleaf/validators';
+import { Hono } from 'hono';
 import { getContextLocale, getContextUserOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
 import routes from './routes';

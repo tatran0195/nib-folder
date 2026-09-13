@@ -1,9 +1,18 @@
+import { assertIfMatch, etag, parseIfMatch, projectResponseDto, serialize } from '@nibleaf/core';
+import { exportProjectMarkdown, exportProjectThemeRepository } from '@nibleaf/exports';
+import {
+  createProject,
+  deleteProject,
+  exportProjectTheme,
+  getProject,
+  getProjectThemeCatalog,
+  importProjectTheme,
+  listProjects,
+  updateProject,
+} from '@nibleaf/projects';
 import { createProjectBody, themeImportBodySchema, updateProjectBody } from '@nibleaf/validators';
 import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
-import { exportProjectMarkdown, exportProjectThemeRepository } from '@/actions/export';
-import { createProject, deleteProject, getProject, listProjects, updateProject } from '@/actions/projects';
-import { exportProjectTheme, getProjectThemeCatalog, importProjectTheme } from '@/actions/themes';
 import { badRequest } from '@/errors';
 import { getContextOrganizationIdOrThrow, getContextUserOrThrow, type HonoEnv } from '@/lib/hono/context';
 import { validator } from '@/lib/hono/validate';
@@ -20,7 +29,9 @@ const app = new Hono<HonoEnv>()
   })
   .get('/:id', ...projectsRoutes.get, async (ctx) => {
     const organizationId = getContextOrganizationIdOrThrow();
-    return ctx.json({ data: await getProject(organizationId, ctx.req.param('id')) }, 200);
+    const project = await getProject(organizationId, ctx.req.param('id'));
+    ctx.header('ETag', etag(project.updatedAt));
+    return ctx.json({ data: serialize(projectResponseDto, project) }, 200);
   })
   .get('/:id/export', ...projectsRoutes.export, async (ctx) => {
     // Guard (requireProjectMember) already verified membership in the site's org.
@@ -60,7 +71,14 @@ const app = new Hono<HonoEnv>()
   )
   .patch('/:id', ...projectsRoutes.update, validator('json', updateProjectBody), async (ctx) => {
     const organizationId = getContextOrganizationIdOrThrow();
-    return ctx.json({ data: await updateProject(organizationId, ctx.req.param('id'), ctx.req.valid('json')) }, 200);
+    const ifMatch = parseIfMatch(ctx);
+    if (ifMatch) {
+      const existing = await getProject(organizationId, ctx.req.param('id'));
+      assertIfMatch(ctx, existing.updatedAt);
+    }
+    const updated = await updateProject(organizationId, ctx.req.param('id'), ctx.req.valid('json'));
+    ctx.header('ETag', etag(updated.updatedAt));
+    return ctx.json({ data: serialize(projectResponseDto, updated) }, 200);
   })
   .delete('/:id', ...projectsRoutes.remove, async (ctx) => {
     const organizationId = getContextOrganizationIdOrThrow();

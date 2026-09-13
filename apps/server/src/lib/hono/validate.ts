@@ -9,12 +9,11 @@ import { AppError } from '@/errors';
  * failure flows through the global error handler as the documented
  * `{ error: { code, message, details } }` with status 422.
  */
-// biome-ignore lint/suspicious/noExplicitAny: thin pass-through that preserves the overloaded validator signature
-const withEnvelope = (target: any, schema: any) =>
-  baseValidator(target, schema, (result: { success: boolean; error?: unknown }) => {
+const withEnvelope: typeof baseValidator = (target, schema) =>
+  (baseValidator as (t: unknown, s: unknown, hook: unknown) => unknown)(target, schema, (result: { success: boolean; error?: unknown }) => {
     if (!result.success) {
       throw new AppError({ code: 'validation:failed', message: 'Validation failed.', details: { issues: result.error } });
     }
-  });
+  }) as never;
 
-export const validator = withEnvelope as unknown as typeof baseValidator;
+export const validator = withEnvelope;

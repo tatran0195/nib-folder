@@ -1,11 +1,8 @@
 import { type ServerType, serve } from '@hono/node-server';
-import { isQueueEnabled, QueueNames, scheduleExportMaintenance } from '@nibleaf/bullmq';
-import { bootWorkers, closeQueueEvents, closeQueues, closeWorkers } from '@nibleaf/bullmq/workers';
 import { logger } from '@nibleaf/logger';
+import workerApp from './app';
 import { env } from './env';
-import systemApp, { setWorkerReady } from './modules/system/handlers';
-import { processors } from './processors';
-import { startDeploymentReaper } from './reaper';
+import { startWorker, type WorkerInstance } from './worker';
 
 process.on('unhandledRejection', (reason) => {
   logger.error({ err: reason instanceof Error ? reason : new Error(String(reason)) }, 'unhandled rejection');
@@ -16,33 +13,38 @@ process.on('uncaughtException', (error) => {
   process.exit(1);
 });
 
-let server: ServerType | null = null;
-let reaperTimer: NodeJS.Timeout | null = null;
+let bunServer: { port?: number; stop: (closeActiveConnections?: boolean) => Promise<void> | void } | null = null;
+let nodeServer: ServerType | null = null;
+let workerInstance: WorkerInstance | null = null;
 
 async function main() {
-  server = serve({ port: env.WORKER_PORT, fetch: systemApp.fetch }, (info) => {
-    logger.info(`Nibleaf worker ops server on http://localhost:${info.port}`);
-    logger.info(`  health → http://localhost:${info.port}/health`);
-    logger.info(`  jobs   → http://localhost:${info.port}/jobs`);
-  });
-
-  await bootWorkers(processors);
-  if (isQueueEnabled(QueueNames.EXPORT)) {
-    await scheduleExportMaintenance();
+  if (typeof Bun !== 'undefined') {
+    const bun = Bun.serve({
+      port: env.WORKER_PORT,
+      fetch: workerApp.fetch,
+    });
+    bunServer = bun;
+    const port = bun.port ?? env.WORKER_PORT;
+    logger.info(`Nibleaf worker ops server (Bun) on http://localhost:${port}`);
+    logger.info(`  health → http://localhost:${port}/health`);
+    logger.info(`  jobs   → http://localhost:${port}/jobs`);
+  } else {
+    nodeServer = serve({ port: env.WORKER_PORT, fetch: workerApp.fetch }, (info) => {
+      logger.info(`Nibleaf worker ops server on http://localhost:${info.port}`);
+      logger.info(`  health → http://localhost:${info.port}/health`);
+      logger.info(`  jobs   → http://localhost:${info.port}/jobs`);
+    });
   }
-  // Sweep deployments stranded by a crash mid-build back to FAILED.
-  reaperTimer = startDeploymentReaper();
-  setWorkerReady(true);
-  logger.info('Queue workers started');
+
+  workerInstance = await startWorker();
 }
 
 async function cleanup() {
-  setWorkerReady(false);
-  if (reaperTimer) {
-    clearInterval(reaperTimer);
+  if (workerInstance) {
+    await workerInstance.close();
   }
-  await Promise.allSettled([closeWorkers(), closeQueueEvents(), closeQueues()]);
-  server?.close();
+  bunServer?.stop?.();
+  nodeServer?.close();
 }
 
 async function shutdown(signal: string) {
@@ -62,3 +64,5 @@ main().catch((error) => {
   logger.error({ error }, 'fatal worker startup error');
   process.exit(1);
 });
+
+export default workerApp;

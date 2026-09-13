@@ -1,8 +1,8 @@
 import { timingSafeEqual } from 'node:crypto';
 import { getConnInfo } from '@hono/node-server/conninfo';
+import { clientIpFromForwardedFor, isPrivateIp } from '@nibleaf/shared';
 import type { Context, MiddlewareHandler } from 'hono';
 import { AppError } from '@/errors';
-import { clientIpFromForwardedFor, isPrivateIp } from '@/lib/client-ip';
 import { envExtras } from '@/lib/env-extras';
 import type { HonoEnv } from '@/lib/hono/context';
 

@@ -33,32 +33,30 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('./audit', () => ({ recordMcpAudit: mocks.audit }));
-vi.mock('@/actions/projects', () => ({ getProject: mocks.getProject }));
-vi.mock('@/actions/pages', () => ({ listPages: mocks.listPages, getPage: mocks.getPage }));
-vi.mock('@/actions/languages', () => ({ listLanguages: mocks.listLanguages }));
-vi.mock('@/actions/branches', () => ({ listBranches: mocks.listBranches }));
-vi.mock('@/actions/search', () => ({
+vi.mock('@nibleaf/projects', () => ({
+  getProject: mocks.getProject,
+  listLanguages: mocks.listLanguages,
+  listBranches: mocks.listBranches,
+  exportProjectTheme: mocks.exportProjectTheme,
+  getProjectThemeCatalog: mocks.getProjectThemeCatalog,
+  importProjectTheme: mocks.importProjectTheme,
   getProjectSearchConfiguration: mocks.getProjectSearchConfiguration,
   getProjectSearchIndexDiagnostics: mocks.getProjectSearchIndexDiagnostics,
 }));
-vi.mock('@/actions/addons', () => ({
+vi.mock('@nibleaf/content', () => ({ listPages: mocks.listPages, getPage: mocks.getPage }));
+vi.mock('@nibleaf/addons', () => ({
   listProjectAddons: mocks.listProjectAddons,
   getProjectAddon: mocks.getProjectAddon,
   listProjectAddonAuditEvents: mocks.listProjectAddonAuditEvents,
 }));
-vi.mock('@/actions/themes', () => ({
-  exportProjectTheme: mocks.exportProjectTheme,
-  getProjectThemeCatalog: mocks.getProjectThemeCatalog,
-  importProjectTheme: mocks.importProjectTheme,
-}));
-vi.mock('@/actions/exports', () => ({ listExports: mocks.listExports, getExport: mocks.getExport }));
-vi.mock('@/actions/deployments', () => ({
+vi.mock('@nibleaf/exports', () => ({ listExports: mocks.listExports, getExport: mocks.getExport }));
+vi.mock('@nibleaf/deployments', () => ({
   listDeployments: mocks.listDeployments,
   getDeployment: mocks.getDeployment,
   getPendingChanges: mocks.getPendingChanges,
 }));
-vi.mock('@/actions/git/workflow', () => ({ getGitWorkspaceStatus: mocks.getGitWorkspaceStatus }));
-vi.mock('@/actions/integrations', () => ({
+vi.mock('@nibleaf/git', () => ({ getGitWorkspaceStatus: mocks.getGitWorkspaceStatus }));
+vi.mock('@nibleaf/integrations', () => ({
   listProjectIntegrations: mocks.listProjectIntegrations,
   getProjectIntegration: mocks.getProjectIntegration,
 }));

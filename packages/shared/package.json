@@ -7,7 +7,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./addons": "./src/addons.ts",
+    "./client-ip": "./src/client-ip.ts",
     "./constants": "./src/constants.ts",
+    "./errors": "./src/errors.ts",
     "./rbac": "./src/rbac.ts",
     "./ids": "./src/ids.ts",
     "./integrations": "./src/integrations.ts",

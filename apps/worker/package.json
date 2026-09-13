@@ -5,9 +5,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm run with-env tsx watch --clear-screen=false src/index.ts",
+    "dev": "pnpm run with-env bun run --watch src/index.ts",
     "build": "tsdown",
-    "start": "node ./dist/index.mjs",
+    "start": "bun run src/index.ts",
     "with-env": "dotenv -e ../../.env --",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "typecheck": "tsc --noEmit",
@@ -19,6 +19,7 @@
     "@nibleaf/bullmq": "workspace:*",
     "@nibleaf/database": "workspace:*",
     "@nibleaf/email": "workspace:*",
+    "@nibleaf/jobs": "workspace:*",
     "@nibleaf/logger": "workspace:*",
     "@nibleaf/qdrant": "workspace:*",
     "@nibleaf/search": "workspace:*",
@@ -38,6 +39,7 @@
   },
   "devDependencies": {
     "@nibleaf/tsconfig": "workspace:*",
+    "@types/bun": "^1.4.2",
     "@types/node": "^22.20.1",
     "@types/nodemailer": "^8.0.1",
     "dotenv-cli": "^11.0.0",
