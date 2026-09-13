@@ -2,11 +2,11 @@ import { createFileRoute } from '@tanstack/react-router';
 import ProjectSettingsPage, { isProjectSectionId, type ProjectSectionId } from '@/features/project/ProjectSettingsPage';
 
 export const Route = createFileRoute('/app/projects/$projectId/settings')({
-  ssr: false,
-  component: ProjectSettingsRoute,
   validateSearch: (search: Record<string, unknown>): { section: ProjectSectionId } => ({
     section: isProjectSectionId(search.section) ? search.section : search.section === 'analytics' ? 'integrations' : 'general',
   }),
+  ssr: false,
+  component: ProjectSettingsRoute,
 });
 
 function ProjectSettingsRoute() {

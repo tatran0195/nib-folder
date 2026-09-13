@@ -3,8 +3,6 @@ import { z } from 'zod';
 import ProjectEditorPage from '@/features/editor/ProjectEditorPage';
 
 export const Route = createFileRoute('/app/projects/$projectId/editor')({
-  ssr: false,
-  component: EditorRoute,
   validateSearch: (search) =>
     z
       .object({
@@ -13,6 +11,8 @@ export const Route = createFileRoute('/app/projects/$projectId/editor')({
         publish: z.preprocess((value) => (value === true || value === 'true' || value === '1' ? true : undefined), z.literal(true).optional()),
       })
       .parse(search),
+  ssr: false,
+  component: EditorRoute,
 });
 
 function EditorRoute() {

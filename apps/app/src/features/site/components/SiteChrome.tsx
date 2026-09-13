@@ -3,7 +3,7 @@ import { THEME_STORAGE_KEY } from '@nibleaf/design-system/theme';
 import { siteT } from '@nibleaf/i18n/site';
 import { Outlet, useNavigate, useRouterState } from '@tanstack/react-router';
 import { BookOpen, ExternalLink, Link2, Moon, Search, Sun } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { DocumentationReaderLayout, DocumentationThemeProvider } from '@/components/site/documentation-theme-provider';
 import { LanguageSwitcher } from '@/components/site/language-switcher';
 import { MadeWithBadge } from '@/components/site/made-with-badge';
@@ -58,7 +58,9 @@ export function SiteChrome({ projectId, lang, site }: SiteChromeProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [pageAlternates, setPageAlternates] = useState<SiteLanguageAlternate[]>([]);
   const [measuredHeaderHeight, setMeasuredHeaderHeight] = useState<number>();
-  const observeHeader = useCallback((node: HTMLDivElement | null) => {
+  const headerRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const node = headerRef.current;
     if (!node) {
       return;
     }
@@ -66,7 +68,9 @@ export function SiteChrome({ projectId, lang, site }: SiteChromeProps) {
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(node);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   // SSR renders the platform-neutral label; the client corrects it after hydration.
@@ -317,7 +321,7 @@ export function SiteChrome({ projectId, lang, site }: SiteChromeProps) {
           header={
             // Header block (main row + optional tab row) sticks as one unit.
             <div
-              ref={observeHeader}
+              ref={headerRef}
               className="sticky top-0 z-30 border-border/70 border-b bg-background/80 backdrop-blur-md"
               data-theme-region="header-shell"
             >

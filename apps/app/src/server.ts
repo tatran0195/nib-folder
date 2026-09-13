@@ -1103,7 +1103,14 @@ const handleRequest: RequestHandler<Register> = async (request, ...rest) => {
     }
   }
   const nonce = randomBytes(18).toString('base64');
-  return ssrNonce.run(nonce, () => withSecurityHeaders(handleRequestInner(request, ...rest), nonce));
+  try {
+    return await ssrNonce.run(nonce, () => withSecurityHeaders(handleRequestInner(request, ...rest), nonce));
+  } catch (err) {
+    return new Response(String((err as { stack?: string })?.stack || err), {
+      status: 500,
+      headers: { 'content-type': 'text/plain; charset=utf-8' },
+    });
+  }
 };
 
 export default { fetch: handleRequest };

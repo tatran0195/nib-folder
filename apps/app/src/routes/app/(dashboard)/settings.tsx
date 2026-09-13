@@ -4,11 +4,11 @@ import SettingsPage, { type SettingsTabValue } from '@/features/settings/Setting
 const isTabValue = (value: unknown): value is SettingsTabValue => value === 'account' || value === 'appearance';
 
 export const Route = createFileRoute('/app/(dashboard)/settings')({
-  ssr: false,
-  component: DashboardSettingsRoute,
   validateSearch: (search: Record<string, unknown>): { tab: SettingsTabValue } => ({
     tab: isTabValue(search.tab) ? search.tab : 'account',
   }),
+  ssr: false,
+  component: DashboardSettingsRoute,
 });
 
 function DashboardSettingsRoute() {
