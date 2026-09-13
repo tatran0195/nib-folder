@@ -50,18 +50,6 @@ export const QUEUE_CONFIGS: Record<QueueNames, QueueConfigEntry> = {
     stalledInterval: 30_000,
     maxStalledCount: 1,
   },
-  [QueueNames.ANALYTICS]: {
-    concurrency: env.ANALYTICS_CONCURRENCY,
-    defaultJobOptions: {
-      ...DEFAULT_JOB_OPTIONS,
-      attempts: 2,
-      backoff: { type: 'exponential', delay: 500 },
-      removeOnComplete: { count: 50, age: ONE_HOUR },
-    },
-    limiter: { max: 100, duration: 1000 },
-    stalledInterval: 15_000,
-    maxStalledCount: 1,
-  },
   [QueueNames.EXPORT]: {
     concurrency: env.EXPORT_CONCURRENCY,
     defaultJobOptions: {

@@ -3,7 +3,6 @@ import type { HonoEnv } from '@/lib/hono/context';
 import activationEvents from './activation-events/handlers';
 import addons from './addons/handlers';
 import ai from './ai/handlers';
-import analytics from './analytics/handlers';
 import apiKeys from './api-keys/handlers';
 import assets from './assets/handlers';
 import branches from './branches/handlers';
@@ -43,7 +42,6 @@ const app = new Hono<HonoEnv>()
   .route('/projects/:projectId/domains', domains)
   .route('/projects/:projectId/api-keys', apiKeys)
   .route('/projects/:projectId/assets', assets)
-  .route('/projects/:projectId/analytics', analytics)
   .route('/projects/:projectId/comments', comments)
   .route('/projects/:projectId/openapi', openapi)
   .route('/projects/:projectId/members', projectMembers)

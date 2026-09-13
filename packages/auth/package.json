@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@nibleaf/bullmq": "workspace:*",
-    "@nibleaf/clickhouse": "workspace:*",
     "@nibleaf/database": "workspace:*",
     "@nibleaf/email": "workspace:*",
     "@nibleaf/i18n": "workspace:*",

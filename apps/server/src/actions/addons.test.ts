@@ -7,7 +7,6 @@ const database = vi.hoisted(() => ({
   authorizeProject: vi.fn(),
   findAuditCursor: vi.fn(),
   listAuditEvents: vi.fn(),
-  resolveCapability: vi.fn(),
   invalidatePublishedSiteConfig: vi.fn(),
   transaction: vi.fn(),
 }));
@@ -22,7 +21,6 @@ vi.mock('@nibleaf/database', () => ({
   },
 }));
 
-vi.mock('./usage', () => ({ resolveProjectCapability: database.resolveCapability }));
 vi.mock('./sites', () => ({ invalidatePublishedSiteConfig: database.invalidatePublishedSiteConfig }));
 
 import { activateProjectAddon, deactivateProjectAddon, listProjectAddonAuditEvents, updateProjectAddon } from './addons';
@@ -94,21 +92,7 @@ describe('project add-on mutations', () => {
     });
     database.findAuditCursor.mockReset();
     database.listAuditEvents.mockReset();
-    database.resolveCapability.mockReset();
     database.invalidatePublishedSiteConfig.mockClear();
-    database.resolveCapability.mockImplementation(async (_ctx, requestedProjectId: string, input: { capabilityKey: string }) => ({
-      schemaVersion: 1,
-      projectId: requestedProjectId,
-      capabilityKey: input.capabilityKey,
-      availability: 'complete',
-      decision: 'enabled',
-      planKey: 'free',
-      source: 'plan',
-      limit: null,
-      meterKey: null,
-      behavior: 'observe',
-      enforcement: 'advisory',
-    }));
 
     const transactionClient = {
       $queryRaw: vi.fn().mockResolvedValue([{ id: projectId }]),
@@ -224,45 +208,6 @@ describe('project add-on mutations', () => {
       status: 403,
     });
     expect(database.transaction).not.toHaveBeenCalled();
-  });
-
-  it('fails closed when the shared capability resolver cannot prove availability', async () => {
-    database.resolveCapability.mockResolvedValueOnce({
-      schemaVersion: 1,
-      projectId,
-      capabilityKey: 'addons.feedback',
-      availability: 'unavailable',
-      decision: 'unknown',
-      planKey: null,
-      source: null,
-      limit: null,
-      meterKey: null,
-      behavior: 'observe',
-      enforcement: 'advisory',
-    });
-
-    await expect(deactivateProjectAddon(userContext, projectId, 'feedback', { expectedRevision: 1 })).resolves.toMatchObject({
-      status: 'unavailable',
-      enabled: false,
-      availability: { available: false, availability: 'unavailable', decision: 'unknown' },
-    });
-    database.resolveCapability.mockResolvedValueOnce({
-      schemaVersion: 1,
-      projectId,
-      capabilityKey: 'addons.feedback',
-      availability: 'unavailable',
-      decision: 'unknown',
-      planKey: null,
-      source: null,
-      limit: null,
-      meterKey: null,
-      behavior: 'observe',
-      enforcement: 'advisory',
-    });
-    await expect(activateProjectAddon(userContext, projectId, 'feedback', { expectedRevision: 2 })).rejects.toMatchObject({
-      code: 'addon:unavailable',
-      details: { availability: 'unavailable', decision: 'unknown', planKey: null },
-    });
   });
 
   it('keeps an unauthorized project selector opaque across tenants', async () => {

@@ -39,10 +39,6 @@ export const queryKeys = {
   openapi: {
     detail: (projectId: string) => ['openapi', projectId] as const,
   },
-  usage: {
-    /** Per-site usage counters for the settings Usage tab. */
-    forProject: (projectId: string) => ['usage', projectId] as const,
-  },
   projectSearch: {
     configuration: (projectId: string) => ['projects', projectId, 'search', 'configuration'] as const,
     index: (projectId: string, cursor?: string, limit?: number) => ['projects', projectId, 'search', 'index', cursor ?? null, limit ?? null] as const,

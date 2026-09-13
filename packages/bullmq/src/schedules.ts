@@ -6,8 +6,6 @@ import { QUEUE_CONFIGS } from './utils/queue';
 class ScheduleConfigurationError extends Error {}
 
 export const PLATFORM_SCHEDULES = [
-  { queue: QueueNames.ANALYTICS, id: 'rollup-analytics-daily', name: 'rollup-analytics', pattern: '10 0 * * *' },
-  { queue: QueueNames.ANALYTICS, id: 'reconcile-usage-periods', name: 'reconcile-usage', pattern: '*/5 * * * *' },
   { queue: QueueNames.EXPORT, id: 'dispatch-export-schedules', name: 'dispatch-export-schedules', pattern: '* * * * *' },
   { queue: QueueNames.EXPORT, id: 'cleanup-exports', name: 'cleanup-exports', pattern: '17 2 * * *' },
 ] as const;
@@ -42,7 +40,6 @@ function assertDefinition(entry: JobSchedulerJson, schedule: Schedule) {
 function assertData(data: unknown, schedule: Schedule) {
   if (!data || typeof data !== 'object') throw new ScheduleConfigurationError(`Missing schedule data: ${schedule.id}`);
   const fields = Object.keys(data);
-  if (schedule.queue === QueueNames.ANALYTICS && fields.length === 0) return;
   if (
     schedule.queue === QueueNames.EXPORT &&
     fields.length === 1 &&

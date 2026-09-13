@@ -17,7 +17,6 @@ import { AppError, notFound } from '@/errors';
 import type { HonoEnv } from '@/lib/hono/context';
 import { mutateProjectConfig } from './project-config';
 import { invalidatePublishedSiteConfig } from './sites';
-import { resolveProjectCapability } from './usage';
 
 type AddonIntent = 'read' | 'write';
 
@@ -106,16 +105,25 @@ const validateConfig = <Id extends AddonId>(addonId: Id, config: unknown) => {
 const configurationComplete = (addonId: AddonId, config: Record<string, unknown>) =>
   !ADDON_REGISTRY[addonId].requiresConfiguration || z.string().trim().min(1).safeParse(config.urlTemplate).success;
 
-const resolveAddonAvailability = async (ctx: Context<HonoEnv>, projectId: string, definition: AddonDefinition) => {
-  const capability = await resolveProjectCapability(ctx, projectId, {
-    capabilityKey: definition.availability.entitlement,
-    eligiblePlanKeys: definition.availability.plans,
-  });
-  const behavior = z.enum(['observe', 'warn', 'block']).catch('observe').parse(capability.behavior);
+const resolveAddonAvailability = async (
+  _ctx: Context<HonoEnv>,
+  projectId: string,
+  definition: AddonDefinition,
+): Promise<AddonCapabilityResolution> => {
+  const available = definition.availability.state !== 'coming_soon';
   return {
-    ...capability,
-    behavior,
-    available: definition.availability.state !== 'coming_soon' && capability.availability === 'complete' && capability.decision === 'enabled',
+    schemaVersion: 1,
+    projectId,
+    capabilityKey: definition.availability.entitlement,
+    availability: available ? 'complete' : 'unavailable',
+    decision: available ? 'enabled' : 'disabled',
+    planKey: null,
+    source: null,
+    limit: null,
+    meterKey: null,
+    behavior: 'observe',
+    enforcement: 'advisory',
+    available,
   };
 };
 

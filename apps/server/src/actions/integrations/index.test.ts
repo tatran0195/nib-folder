@@ -45,7 +45,6 @@ vi.mock('@/env', () => ({
   },
 }));
 
-vi.mock('@nibleaf/clickhouse/keys', () => ({ keys: () => ({ ANALYTICS_MODE: 'disabled' }) }));
 vi.mock('@nibleaf/qdrant/keys', () => ({ keys: () => ({ QDRANT_URL: undefined }) }));
 vi.mock('@nibleaf/search/keys', () => ({
   keys: () => ({ SEARCH_RUNTIME: 'legacy', SEARCH_EMBEDDING_MODEL: 'embedding', SEARCH_ANSWER_MODEL: 'answer' }),

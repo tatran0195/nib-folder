@@ -26,7 +26,6 @@
     "@nibleaf/i18n": "workspace:*",
     "@nibleaf/server": "workspace:*",
     "@nibleaf/shared": "workspace:*",
-    "@nibleaf/usage": "workspace:*",
     "@nibleaf/validators": "workspace:*",
     "@scalar/api-reference-react": "^0.9.66",
     "@t3-oss/env-core": "^0.13.11",

@@ -14,12 +14,8 @@ const mocks = vi.hoisted(() => ({
   getPage: vi.fn(),
   listLanguages: vi.fn(),
   listBranches: vi.fn(),
-  getAnalyticsOverview: vi.fn(),
   getProjectSearchConfiguration: vi.fn(),
   getProjectSearchIndexDiagnostics: vi.fn(),
-  getProjectUsageSummary: vi.fn(),
-  getProjectEntitlements: vi.fn(),
-  checkProjectEntitlement: vi.fn(),
   listProjectAddons: vi.fn(),
   getProjectAddon: vi.fn(),
   listProjectAddonAuditEvents: vi.fn(),
@@ -41,15 +37,9 @@ vi.mock('@/actions/projects', () => ({ getProject: mocks.getProject }));
 vi.mock('@/actions/pages', () => ({ listPages: mocks.listPages, getPage: mocks.getPage }));
 vi.mock('@/actions/languages', () => ({ listLanguages: mocks.listLanguages }));
 vi.mock('@/actions/branches', () => ({ listBranches: mocks.listBranches }));
-vi.mock('@/actions/analytics', () => ({ getAnalyticsOverview: mocks.getAnalyticsOverview }));
 vi.mock('@/actions/search', () => ({
   getProjectSearchConfiguration: mocks.getProjectSearchConfiguration,
   getProjectSearchIndexDiagnostics: mocks.getProjectSearchIndexDiagnostics,
-}));
-vi.mock('@/actions/usage', () => ({
-  getProjectUsageSummary: mocks.getProjectUsageSummary,
-  getProjectEntitlements: mocks.getProjectEntitlements,
-  checkProjectEntitlement: mocks.checkProjectEntitlement,
 }));
 vi.mock('@/actions/addons', () => ({
   listProjectAddons: mocks.listProjectAddons,
@@ -203,57 +193,6 @@ beforeEach(() => {
     samples: { items: [], nextCursor: null, hasMore: false },
     issues: { staleCount: 0, failedCount: 0, items: [] },
   });
-  mocks.getProjectUsageSummary.mockResolvedValue({
-    schemaVersion: 1,
-    projectId: 'project-1',
-    period: { start: '2026-08-01T00:00:00.000Z', endExclusive: '2026-09-01T00:00:00.000Z', timezone: 'UTC' },
-    availability: 'partial',
-    plan: { key: 'starter', status: 'active' },
-    meters: [
-      {
-        key: 'search_query',
-        meterKey: 'search_query',
-        unit: 'count',
-        quantity: '9007199254740993',
-        limit: null,
-        availability: 'partial',
-        behavior: 'block',
-        enforcement: 'advisory',
-        periodStart: '2026-08-01T00:00:00.000Z',
-        periodEndExclusive: '2026-09-01T00:00:00.000Z',
-        state: 'unknown',
-        ratio: null,
-        allowed: true,
-      },
-    ],
-    generatedAt: '2026-08-24T00:00:00.000Z',
-  });
-  mocks.getProjectEntitlements.mockResolvedValue({
-    schemaVersion: 1,
-    projectId: 'project-1',
-    planKey: 'starter',
-    availability: 'complete',
-    entitlements: [
-      {
-        capabilityKey: 'addons.feedback',
-        enabled: true,
-        availability: 'complete',
-        limit: null,
-        meterKey: null,
-        behavior: 'observe',
-        enforcement: 'advisory',
-      },
-    ],
-  });
-  mocks.checkProjectEntitlement.mockResolvedValue({
-    capabilityKey: 'addons.feedback',
-    enabled: true,
-    availability: 'complete',
-    limit: null,
-    meterKey: null,
-    behavior: 'observe',
-    enforcement: 'advisory',
-  });
   const addon = {
     id: 'feedback',
     group: 'engagement',
@@ -335,10 +274,7 @@ describe('Nibleaf MCP protocol surface', () => {
     ['pages:read', ['get_capabilities', 'get_page', 'list_pages']],
     ['languages:read', ['get_capabilities', 'list_languages']],
     ['versions:read', ['get_capabilities', 'list_versions']],
-    ['analytics:read', ['get_analytics_overview', 'get_capabilities']],
     ['search:read', ['get_capabilities', 'get_search_configuration', 'get_search_index_diagnostics']],
-    ['usage:read', ['get_capabilities', 'get_usage_summary']],
-    ['entitlements:read', ['check_entitlement', 'get_capabilities', 'get_entitlements']],
     ['addons:read', ['get_addon', 'get_capabilities', 'list_addon_audit_events', 'list_addons']],
     ['themes:read', ['get_capabilities', 'get_theme_catalog', 'get_theme_template', 'preview_theme_import']],
     ['exports:read', ['get_capabilities', 'get_export', 'list_exports']],
@@ -415,29 +351,6 @@ describe('Nibleaf MCP protocol surface', () => {
   });
 
   it('redacts search terms, preview bearer URLs, storage internals, snapshots, and raw errors', async () => {
-    mocks.getAnalyticsOverview.mockResolvedValue({
-      availability: 'complete',
-      source: 'relational',
-      range: '7d',
-      timezone: 'UTC',
-      totalViews: 12,
-      uniqueVisitors: 4,
-      timeseries: [],
-      topPages: [],
-      languages: [],
-      devices: [],
-      engagement: { engagedViews: null, averageEngagementMs: null },
-      searches: {
-        total: 3,
-        zeroResults: 1,
-        clickedResults: 2,
-        averageLatencyMs: 14,
-        topTerms: [{ query: 'private customer search', count: 3 }],
-        queryTerms: 'legacy',
-      },
-      ai: { answersCompleted: null, answersFailed: null, promptTokens: null, completionTokens: null, costMicros: null, averageLatencyMs: null },
-      noAnswerReasons: [],
-    });
     mocks.getGitWorkspaceStatus.mockResolvedValue({
       id: 'git-1',
       provider: 'github',
@@ -515,10 +428,9 @@ describe('Nibleaf MCP protocol surface', () => {
     ]);
 
     const { server, clientTransport, request } = await createProtocolClient();
-    const analytics = await request('tools/call', { name: 'get_analytics_overview', arguments: { range: '7d' } });
     const git = await request('tools/call', { name: 'get_git_integration_status', arguments: {} });
     const exports = await request('tools/call', { name: 'list_exports', arguments: {} });
-    const serialized = JSON.stringify([analytics.result, git.result, exports.result]);
+    const serialized = JSON.stringify([git.result, exports.result]);
     expect(serialized).not.toContain('private customer search');
     expect(serialized).not.toContain('topTerms');
     expect(serialized).not.toContain('queryTerms');
@@ -531,43 +443,6 @@ describe('Nibleaf MCP protocol surface', () => {
     expect(serialized).not.toContain('raw export failure');
     expect(serialized).toContain('"available":true');
     expect(serialized).toContain('"errorCode":"export_failed"');
-    await clientTransport.close();
-    await server.close();
-  });
-
-  it('normalizes the baseline relational search aggregate without exposing top terms', async () => {
-    mocks.getAnalyticsOverview.mockResolvedValue({
-      availability: 'complete',
-      source: 'relational',
-      range: '7d',
-      timezone: 'UTC',
-      totalViews: 0,
-      uniqueVisitors: 0,
-      timeseries: [],
-      topPages: [],
-      languages: [],
-      devices: [],
-      engagement: { engagedViews: null, averageEngagementMs: null },
-      searches: { total: 2, topTerms: [{ query: 'must stay private', count: 2 }] },
-      ai: { answersCompleted: null, answersFailed: null, promptTokens: null, completionTokens: null, costMicros: null, averageLatencyMs: null },
-      noAnswerReasons: [],
-    });
-    const { server, clientTransport, request } = await createProtocolClient();
-    const response = await request<{
-      isError?: boolean;
-      structuredContent: {
-        data: { searches: { total: number; zeroResults: number | null; clickedResults: number | null; averageLatencyMs: number | null } };
-      };
-    }>('tools/call', { name: 'get_analytics_overview', arguments: { range: '7d' } });
-    expect(response.result?.isError).not.toBe(true);
-    expect(response.result?.structuredContent.data.searches).toEqual({
-      total: 2,
-      zeroResults: null,
-      clickedResults: null,
-      averageLatencyMs: null,
-    });
-    expect(JSON.stringify(response.result)).not.toContain('must stay private');
-    expect(JSON.stringify(response.result)).not.toContain('topTerms');
     await clientTransport.close();
     await server.close();
   });
@@ -610,22 +485,6 @@ describe('Nibleaf MCP protocol surface', () => {
     expect(serialized).not.toContain('private-hash');
     expect(serialized).not.toContain('private-provider-payload');
     expect(serialized).not.toContain('[0.1,0.2]');
-    await clientTransport.close();
-    await server.close();
-  });
-
-  it('preserves exact usage decimals and advisory unknown states', async () => {
-    const { server, clientTransport, request } = await createProtocolClient();
-    const response = await request<{
-      isError?: boolean;
-      structuredContent: { data: { meters: Array<{ quantity: string | null; limit: string | null; enforcement: string }> } };
-    }>('tools/call', { name: 'get_usage_summary', arguments: {} });
-    expect(response.result?.isError).not.toBe(true);
-    expect(response.result?.structuredContent.data.meters[0]).toMatchObject({
-      quantity: '9007199254740993',
-      limit: null,
-      enforcement: 'advisory',
-    });
     await clientTransport.close();
     await server.close();
   });

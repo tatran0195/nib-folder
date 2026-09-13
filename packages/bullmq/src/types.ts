@@ -1,6 +1,5 @@
 import type { Job, JobsOptions } from 'bullmq';
 import type { QueueNames } from './constants';
-import type { AnalyticsJobData, AnalyticsJobName } from './jobs/analytics';
 import type { EmailJobName, SendEmailJobData } from './jobs/email';
 import type { ExportJobData, ExportJobName } from './jobs/export';
 import type { GitSyncJobData, GitSyncJobName } from './jobs/git';
@@ -15,7 +14,6 @@ export interface QueueJobMap {
   [QueueNames.PUBLISH]: { name: PublishJobName; data: PublishDeploymentJobData };
   [QueueNames.SEARCH]: { name: SearchJobName; data: ReindexProjectJobData };
   [QueueNames.EMAIL]: { name: EmailJobName; data: SendEmailJobData };
-  [QueueNames.ANALYTICS]: { name: AnalyticsJobName; data: AnalyticsJobData };
   [QueueNames.EXPORT]: { name: ExportJobName; data: ExportJobData };
   [QueueNames.GIT]: { name: GitSyncJobName; data: GitSyncJobData };
 }

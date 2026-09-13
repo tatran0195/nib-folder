@@ -1,5 +1,5 @@
-import { eraseProjectOrganization, TenantErasureProjectNotFoundError, TenantUsageDeletionPendingError } from '@nibleaf/auth/tenant-erasure';
-import { assignDefaultUsagePlan, type Prisma, prisma } from '@nibleaf/database';
+import { eraseProjectOrganization, TenantErasureProjectNotFoundError } from '@nibleaf/auth/tenant-erasure';
+import { type Prisma, prisma } from '@nibleaf/database';
 import { addonDefinitions, defaultProjectAddonProvisioning, projectConfigWithAddons } from '@nibleaf/shared/addons';
 import { MemberRole } from '@nibleaf/shared/constants';
 import { THEME_PRESETS, THEME_SCHEMA_VERSION } from '@nibleaf/shared/themes';
@@ -92,7 +92,6 @@ export const createProject = async (userId: string, body: CreateProjectBody) => 
     // creator its owner. That org is the site's member boundary (per-site
     // members/roles). Slug is left null to avoid the global org-slug unique.
     const org = await tx.organization.create({ data: { name: body.name } });
-    await assignDefaultUsagePlan(tx, org.id);
     await tx.member.create({ data: { organizationId: org.id, userId, role: MemberRole.OWNER } });
     const project = await tx.project.create({
       data: {
@@ -197,9 +196,6 @@ export const deleteProject = async (organizationId: string, id: string) => {
   try {
     await eraseProjectOrganization(organizationId, id);
   } catch (error) {
-    if (error instanceof TenantUsageDeletionPendingError) {
-      throw conflict('Usage ingestion is still draining. Retry project deletion.', { reason: 'usage_ingestion_pending' });
-    }
     if (error instanceof TenantErasureProjectNotFoundError) throw notFound('project', { id });
     throw error;
   }

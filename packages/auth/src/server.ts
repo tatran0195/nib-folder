@@ -1,6 +1,6 @@
 import { createJob, QueueNames } from '@nibleaf/bullmq';
 import type { PublishDeploymentJobData } from '@nibleaf/bullmq/jobs/publish';
-import { assignDefaultUsagePlan, Prisma, prisma } from '@nibleaf/database';
+import { Prisma, prisma } from '@nibleaf/database';
 import {
   createEmailTranslator,
   type RenderedEmail,
@@ -681,7 +681,6 @@ export async function provisionWorkspace(user: { id: string; name?: string | nul
           slug: `${slugify(user.email.split('@')[0] ?? 'workspace')}-${Date.now().toString(36)}`,
         },
       });
-      await assignDefaultUsagePlan(tx, organization.id);
       return organization;
     });
     await prisma.member.create({ data: { organizationId: org.id, userId: user.id, role: 'owner' } });

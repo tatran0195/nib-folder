@@ -1,4 +1,3 @@
-import { keys as clickHouseKeys } from '@nibleaf/clickhouse/keys';
 import { type IntegrationWebhookDelivery, Prisma, type ProjectIntegration, prisma } from '@nibleaf/database';
 import { keys as qdrantKeys } from '@nibleaf/qdrant/keys';
 import { keys as searchKeys } from '@nibleaf/search/keys';
@@ -348,10 +347,6 @@ const listAuthorizedProjectIntegrations = async (projectId: string): Promise<Int
         project.createdAt,
       ),
     );
-  }
-  const clickhouse = clickHouseKeys();
-  if (clickhouse.ANALYTICS_MODE !== 'disabled') {
-    connections.set('clickhouse', adapterConnection(projectId, { providerId: 'clickhouse', mode: clickhouse.ANALYTICS_MODE }, project.createdAt));
   }
   if (env.POSTMARK_API_KEY) {
     connections.set(

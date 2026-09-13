@@ -33,18 +33,7 @@ const project = (redirects: Array<{ from: string; to: string }>) => ({
   config: { redirects },
   takedownAt: null,
   addons: [{ key: 'feedback', enabled: true, config: { placement: 'after-content', presentation: 'compact' } }],
-  organization: {
-    usagePlan: {
-      status: 'active',
-      effectiveAt: new Date('2026-01-01T00:00:00.000Z'),
-      expiresAt: null,
-      plan: {
-        key: 'pro',
-        active: true,
-        entitlements: [] as { capabilityKey: string; enabled: boolean; meter: { active: boolean } | null }[],
-      },
-    },
-  },
+  organization: {},
   languages: [
     {
       id: 'language-1',
@@ -134,14 +123,13 @@ describe('createDeployment redirect preflight', () => {
     });
   });
 
-  it('removes enabled add-ons from preflight delivery when the entitlement is disabled', async () => {
+  it('includes enabled add-ons in preflight delivery', async () => {
     const value = project([]);
-    value.organization.usagePlan.plan.entitlements.push({ capabilityKey: 'addons.feedback', enabled: false, meter: null });
     mocks.projectFindUnique.mockResolvedValue(value);
 
     const snapshot = await getCurrentSnapshot('project-1');
 
-    expect(snapshot.project.config).toMatchObject({ addons: { feedback: false } });
+    expect(snapshot.project.config).toMatchObject({ addons: { feedback: true } });
   });
 
   it('does not reveal or publish a project outside the caller organization', async () => {

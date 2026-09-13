@@ -245,7 +245,7 @@ const validInstant = (value: Date | string): number | null => {
  * limits are intentionally absent: usage enforcement is advisory. */
 export const projectAddonRowsForDelivery = (
   rows: readonly { key: string; enabled: boolean; config: unknown }[],
-  assignment: AddonDeliveryPlanAssignment | null | undefined,
+  assignment?: AddonDeliveryPlanAssignment | null,
   now = new Date(),
 ): ProjectAddonProjectionRow[] => {
   const byId = new Map(rows.flatMap((row) => (isAddonId(row.key) ? [[row.key, row] as const] : [])));
@@ -253,22 +253,30 @@ export const projectAddonRowsForDelivery = (
   const effectiveAt = assignment ? validInstant(assignment.effectiveAt) : null;
   const expiresAt = assignment?.expiresAt ? validInstant(assignment.expiresAt) : null;
   const activePlan =
-    assignment?.status === 'active' &&
-    assignment.plan.active &&
-    effectiveAt !== null &&
-    effectiveAt <= nowAt &&
-    (assignment.expiresAt === null || (expiresAt !== null && expiresAt > nowAt));
+    assignment === undefined
+      ? true
+      : assignment !== null &&
+        assignment.status === 'active' &&
+        assignment.plan.active &&
+        effectiveAt !== null &&
+        effectiveAt <= nowAt &&
+        (assignment.expiresAt === null || (expiresAt !== null && expiresAt > nowAt));
 
   return addonDefinitions.map((definition) => {
     const row = byId.get(definition.id);
     const availability: AddonDefinition['availability'] = definition.availability;
     const entitlement = assignment?.plan.entitlements.find((item) => item.capabilityKey === definition.availability.entitlement);
     const capabilityAvailable =
-      activePlan &&
-      availability.state !== 'coming_soon' &&
-      availability.plans.some((planKey) => planKey === assignment.plan.key) &&
-      entitlement?.enabled === true &&
-      (entitlement.meter?.active ?? true);
+      assignment === undefined
+        ? availability.state !== 'coming_soon'
+        : Boolean(
+            activePlan &&
+              assignment &&
+              availability.state !== 'coming_soon' &&
+              availability.plans.some((planKey) => planKey === assignment.plan.key) &&
+              entitlement?.enabled === true &&
+              (entitlement.meter?.active ?? true),
+          );
     return {
       key: definition.id,
       enabled: (row?.enabled ?? definition.defaultEnabled) && capabilityAvailable,

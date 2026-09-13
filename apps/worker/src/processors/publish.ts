@@ -1,12 +1,5 @@
 import { createJob, QueueNames } from '@nibleaf/bullmq';
 import type { PublishDeploymentJobData } from '@nibleaf/bullmq/jobs/publish';
-import {
-  type AnalyticsPayload,
-  buildAnalyticsEvent,
-  keys as clickHouseKeys,
-  clickHouseWritesEnabled,
-  deterministicAnalyticsEventId,
-} from '@nibleaf/clickhouse';
 import { type Deployment, Prisma, type Project, prisma } from '@nibleaf/database';
 import { createLogger } from '@nibleaf/logger';
 import { projectAddonRowsForDelivery } from '@nibleaf/shared/addons';
@@ -16,44 +9,8 @@ import type { Job } from 'bullmq';
 import { env } from '../env';
 import { notifyDeployment } from '../lib/notify';
 import { recordPublishReady } from '../lib/publish-activation';
-import { DurableUsageEnqueueError, enqueueAnalyticsEvent } from '../lib/usage-ingest';
 
 const log = createLogger({ processor: 'publish' });
-
-export const trackPublishLifecycle = async (
-  project: { id: string; organizationId: string; accessMode: string; config: unknown },
-  deploymentId: string,
-  payload: AnalyticsPayload,
-  occurredAt: string,
-): Promise<void> => {
-  const config = clickHouseKeys();
-  if (!clickHouseWritesEnabled(config.ANALYTICS_MODE) || !config.ANALYTICS_HASH_SALT) return;
-  const projectConfig = project.config as { visibility?: string } | null;
-  const visibility = project.accessMode === 'PUBLIC' && projectConfig?.visibility !== 'private' ? 'public' : 'private';
-  const event = buildAnalyticsEvent(
-    {
-      eventId: deterministicAnalyticsEventId(`${deploymentId}:${payload.name}`),
-      occurredAt,
-      consentState: 'not_required',
-      payload,
-    },
-    {
-      tenantId: project.organizationId,
-      projectId: project.id,
-      siteId: project.id,
-      deploymentId,
-      source: 'worker',
-      privacy: { visibility, allowCampaignDimensions: false, allowRawPublicSearchQueries: false },
-      hashSalt: config.ANALYTICS_HASH_SALT,
-    },
-  );
-  try {
-    await enqueueAnalyticsEvent(event);
-  } catch (error) {
-    if (!(error instanceof DurableUsageEnqueueError) || !error.outboxPersisted) throw error;
-    log.warn({ deploymentId, eventId: event.eventId }, 'publish analytics enqueue deferred to the durable usage outbox');
-  }
-};
 
 const siteUrlFor = (projectId: string): string | undefined => (env.APP_URL ? `${env.APP_URL.replace(/\/$/, '')}/sites/${projectId}` : undefined);
 
@@ -307,19 +264,7 @@ async function completePublish(
   job: PublishDeploymentJobData,
   ready: Pick<Deployment, 'createdById' | 'version' | 'completedAt' | 'pagesCount'>,
   project: Pick<Project, 'id' | 'name' | 'organizationId' | 'accessMode' | 'config'>,
-  occurredAt: string,
 ) {
-  await trackPublishLifecycle(
-    project,
-    job.deploymentId,
-    {
-      name: 'publish_completed',
-      operationId: job.deploymentId,
-      sourceType: job.auto ? 'api' : 'ui',
-      itemCount: ready.pagesCount,
-    },
-    occurredAt,
-  );
   await createJob(
     QueueNames.SEARCH,
     { name: 'index-deployment', data: { projectId: job.projectId, deploymentId: job.deploymentId } },
@@ -340,7 +285,6 @@ async function completePublish(
 
 export async function handlePublishJobs(job: Job<PublishDeploymentJobData>): Promise<{ pages: number }> {
   const { deploymentId, projectId, skipGrammarChecks, auto, locale } = job.data;
-  const lifecycleOccurredAt = new Date(job.timestamp ?? Date.now()).toISOString();
   log.info({ deploymentId, projectId }, 'building deployment');
 
   const deployment = await prisma.deployment.findFirst({ where: { id: deploymentId, projectId } });
@@ -353,7 +297,7 @@ export async function handlePublishJobs(job: Job<PublishDeploymentJobData>): Pro
       select: { id: true, name: true, organizationId: true, accessMode: true, config: true },
     });
     if (!project) throw new Error('Published project no longer exists');
-    return completePublish(job.data, deployment, project, lifecycleOccurredAt);
+    return completePublish(job.data, deployment, project);
   }
   await prisma.deployment.update({ where: { id: deploymentId, projectId }, data: { status: 'BUILDING' } });
   let snapshotReady = false;
@@ -365,35 +309,12 @@ export async function handlePublishJobs(job: Job<PublishDeploymentJobData>): Pro
         branches: { orderBy: [{ isDefault: 'desc' }, { createdAt: 'asc' }] },
         openApiDocument: true,
         addons: { select: { key: true, enabled: true, config: true } },
-        organization: {
-          select: {
-            usagePlan: {
-              select: {
-                status: true,
-                effectiveAt: true,
-                expiresAt: true,
-                plan: {
-                  select: {
-                    key: true,
-                    active: true,
-                    entitlements: { select: { capabilityKey: true, enabled: true, meter: { select: { active: true } } } },
-                  },
-                },
-              },
-            },
-          },
-        },
+        organization: { select: { id: true } },
       },
     });
     if (!project) {
       throw new Error(`project ${projectId} not found`);
     }
-    await trackPublishLifecycle(
-      project,
-      deploymentId,
-      { name: 'publish_started', operationId: deploymentId, sourceType: auto ? 'api' : 'ui' },
-      lifecycleOccurredAt,
-    );
     // Moderation backstop: a taken-down site must never build a new deployment,
     // even if a publish request slipped past the API-side check.
     if (project.takedownAt) {
@@ -413,11 +334,7 @@ export async function handlePublishJobs(job: Job<PublishDeploymentJobData>): Pro
       createdAt: createdAt.toISOString(),
       updatedAt: updatedAt.toISOString(),
     }));
-    const draftSnapshot = buildSnapshot(
-      { ...project, addons: projectAddonRowsForDelivery(project.addons, project.organization.usagePlan) },
-      pageRows,
-      new Date().toISOString(),
-    );
+    const draftSnapshot = buildSnapshot({ ...project, addons: projectAddonRowsForDelivery(project.addons) }, pageRows, new Date().toISOString());
     const issues = collectPublishIssues(draftSnapshot.project, pageRows, { skipGrammarChecks: skipGrammarChecks === true });
     if (issues.length > 0) {
       throw new PublishChecksError(summarizeIssues(issues), issues);
@@ -435,7 +352,7 @@ export async function handlePublishJobs(job: Job<PublishDeploymentJobData>): Pro
     });
     snapshotReady = true;
     log.info({ deploymentId, pageCount }, 'deployment ready');
-    return await completePublish(job.data, ready, project, lifecycleOccurredAt);
+    return await completePublish(job.data, ready, project);
   } catch (error) {
     // A delivery failure after READY must not revoke the published snapshot.
     // Let the job retry the durable receipt using the READY fast path above.
@@ -453,22 +370,6 @@ export async function handlePublishJobs(job: Job<PublishDeploymentJobData>): Pro
       },
     });
     const proj = await prisma.project.findUnique({ where: { id: projectId }, select: { name: true } });
-    const analyticsProject = await prisma.project.findUnique({
-      where: { id: projectId },
-      select: { id: true, organizationId: true, accessMode: true, config: true },
-    });
-    if (analyticsProject) {
-      await trackPublishLifecycle(
-        analyticsProject,
-        deploymentId,
-        {
-          name: 'publish_failed',
-          operationId: deploymentId,
-          outcomeReason: error instanceof PublishChecksError ? 'validation' : 'runtime',
-        },
-        lifecycleOccurredAt,
-      );
-    }
     await logPlatformEvent('publish_failed', {
       userId: failed.createdById,
       projectId,

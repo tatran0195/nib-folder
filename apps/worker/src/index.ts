@@ -1,7 +1,6 @@
 import { type ServerType, serve } from '@hono/node-server';
 import { isQueueEnabled, QueueNames, scheduleExportMaintenance } from '@nibleaf/bullmq';
 import { bootWorkers, closeQueueEvents, closeQueues, closeWorkers } from '@nibleaf/bullmq/workers';
-import { closeClickHouseClients, initializeClickHouseFn } from '@nibleaf/clickhouse';
 import { logger } from '@nibleaf/logger';
 import { env } from './env';
 import systemApp, { setWorkerReady } from './modules/system/handlers';
@@ -21,7 +20,6 @@ let server: ServerType | null = null;
 let reaperTimer: NodeJS.Timeout | null = null;
 
 async function main() {
-  await initializeClickHouseFn({ roles: ['reader', 'writer'] });
   server = serve({ port: env.WORKER_PORT, fetch: systemApp.fetch }, (info) => {
     logger.info(`Nibleaf worker ops server on http://localhost:${info.port}`);
     logger.info(`  health → http://localhost:${info.port}/health`);
@@ -43,7 +41,7 @@ async function cleanup() {
   if (reaperTimer) {
     clearInterval(reaperTimer);
   }
-  await Promise.allSettled([closeWorkers(), closeQueueEvents(), closeQueues(), closeClickHouseClients()]);
+  await Promise.allSettled([closeWorkers(), closeQueueEvents(), closeQueues()]);
   server?.close();
 }
 

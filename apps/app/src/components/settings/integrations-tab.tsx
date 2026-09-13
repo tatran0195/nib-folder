@@ -45,7 +45,7 @@ import {
   useUpdateProjectIntegration,
   useVerifyProjectIntegration,
 } from '@/hooks/api';
-import { CLICKHOUSE_MODE_MESSAGE_KEYS, SEARCH_RUNTIME_MESSAGE_KEYS } from './integration-config-values';
+import { SEARCH_RUNTIME_MESSAGE_KEYS } from './integration-config-values';
 import { SettingsSection } from './section';
 
 type ConfigurableProviderId = 'slack' | 'discord' | 'zapier';
@@ -113,12 +113,6 @@ const PROVIDER_META: Record<IntegrationProviderId, { name: MessageKey; descripti
     description: 'settings.integrations.qdrant.description',
     icon: Database,
     tint: 'bg-red-500/15 text-red-700 dark:text-red-300',
-  },
-  clickhouse: {
-    name: 'settings.integrations.provider.clickhouse',
-    description: 'settings.integrations.clickhouse.description',
-    icon: Database,
-    tint: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-300',
   },
   postmark: {
     name: 'settings.integrations.provider.postmark',
@@ -295,8 +289,6 @@ function ConfigRows({ config }: { config: IntegrationPublicConfig }) {
           [t('settings.integrations.field.collection'), config.collectionAlias],
           [t('settings.integrations.field.runtime'), t(SEARCH_RUNTIME_MESSAGE_KEYS[config.searchRuntime])],
         ];
-      case 'clickhouse':
-        return [[t('settings.integrations.field.mode'), t(CLICKHOUSE_MODE_MESSAGE_KEYS[config.mode])]];
       case 'postmark':
         return [[t('settings.integrations.field.messageStream'), config.messageStream ?? t('settings.integrations.value.default')]];
       case 'cloudflare':

@@ -13,7 +13,6 @@ const mocks = vi.hoisted(() => {
   };
   return {
     tx,
-    assignDefaultUsagePlan: vi.fn(),
     inviteMember: vi.fn(),
     prisma: {
       project: { findFirst: vi.fn(), findUnique: vi.fn() },
@@ -26,15 +25,12 @@ const mocks = vi.hoisted(() => {
 vi.mock('@nibleaf/auth/tenant-erasure', () => ({
   eraseProjectOrganization: vi.fn(),
   TenantErasureProjectNotFoundError: class extends Error {},
-  TenantUsageDeletionPendingError: class extends Error {},
 }));
 vi.mock('@nibleaf/database', () => ({
-  assignDefaultUsagePlan: mocks.assignDefaultUsagePlan,
   prisma: mocks.prisma,
 }));
 vi.mock('@/env', () => ({ env: { APP_URL: 'https://nibleaf.test' } }));
 vi.mock('./members', () => ({ inviteMember: mocks.inviteMember }));
-vi.mock('./usage', () => ({ getProjectUsage: vi.fn() }));
 vi.mock('./workspace', () => ({ parseWorkspaceMetadata: () => ({ plan: 'free' }) }));
 
 import { inviteOrganizationOwner } from './admin';
@@ -72,14 +68,13 @@ describe('project add-on provisioning audit', () => {
     mocks.inviteMember.mockResolvedValue({ id: 'invitation-a' });
   });
 
-  it('creates creator-attributed configured events without losing default plan assignment', async () => {
+  it('creates creator-attributed configured events', async () => {
     await createProject('creator-user', { name: 'Docs' });
 
-    expect(mocks.assignDefaultUsagePlan).toHaveBeenCalledWith(mocks.tx, 'org-a');
     expectDefaultAddonAuditParity('creator-user');
   });
 
-  it('creates admin-attributed configured events without losing default plan assignment', async () => {
+  it('creates admin-attributed configured events', async () => {
     await inviteOrganizationOwner('admin-user', {
       organizationName: 'Docs Org',
       siteName: 'Docs',
@@ -87,7 +82,6 @@ describe('project add-on provisioning audit', () => {
       delivery: 'link',
     });
 
-    expect(mocks.assignDefaultUsagePlan).toHaveBeenCalledWith(mocks.tx, 'org-a');
     expectDefaultAddonAuditParity('admin-user');
   });
 });

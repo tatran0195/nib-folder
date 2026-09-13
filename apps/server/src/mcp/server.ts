@@ -4,13 +4,11 @@ import type { HonoEnv } from '@/lib/hono/context';
 import { registerAddonSurface } from './addons';
 import { registerCapabilitySurface } from './capabilities';
 import { registerContentSurface } from './content';
-import { registerInsightSurface } from './insights';
 import { registerIntegrationSurface } from './integrations';
 import { registerOperationSurface } from './operations';
 import { registerSearchSurface } from './search';
 import { registerThemeSurface } from './themes';
 import type { McpPrincipal } from './types';
-import { registerUsageSurface } from './usage';
 
 export const createNibleafMcpServer = (ctx: Context<HonoEnv>, principal: McpPrincipal) => {
   const server = new McpServer(
@@ -22,9 +20,7 @@ export const createNibleafMcpServer = (ctx: Context<HonoEnv>, principal: McpPrin
   );
   registerCapabilitySurface(server, ctx, principal);
   registerContentSurface(server, ctx, principal);
-  registerInsightSurface(server, ctx, principal);
   registerSearchSurface(server, ctx, principal);
-  registerUsageSurface(server, ctx, principal);
   registerAddonSurface(server, ctx, principal);
   registerThemeSurface(server, ctx, principal);
   registerOperationSurface(server, ctx, principal);

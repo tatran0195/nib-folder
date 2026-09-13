@@ -34,12 +34,6 @@ export async function removeJob<Q extends QueueNames>(queueName: Q, jobId: strin
   return false;
 }
 
-/** Maintain the verified scheduler definitions after the staged v5 migration. */
-export async function scheduleAnalyticsRollup(): Promise<void> {
-  await ensurePlatformSchedules(getQueue(QueueNames.ANALYTICS), QueueNames.ANALYTICS);
-  queueLogger.info('Scheduled daily analytics rollup job');
-}
-
 /** Stable scheduler IDs make startup idempotent after the explicit v5 migration. */
 export async function scheduleExportMaintenance(): Promise<void> {
   await ensurePlatformSchedules(getQueue(QueueNames.EXPORT), QueueNames.EXPORT);

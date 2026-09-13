@@ -4,14 +4,12 @@ import { Skeleton } from '@nibleaf/design-system/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@nibleaf/design-system/components/ui/table';
 import { useT } from '@nibleaf/i18n/react';
 import { useNavigate } from '@tanstack/react-router';
-import { BarChart3, BookText, FileText, Plus, Users } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import { SectionCard } from '@/components/analytics/section-card';
-import { ViewsAreaChart } from '@/components/analytics/views-area-chart';
-import type { AnalyticsRange } from '@/hooks/api';
-import { useProjects, useWorkspaceAnalytics } from '@/hooks/api';
+import { BookText, FileText, Plus, Rocket } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { SectionCard } from '@/components/app/section-card';
+import { useProjects } from '@/hooks/api';
 import { recordFirstPublishStage } from '@/lib/first-publish-activation';
-import { useFormatters, viewsTrend } from '@/lib/format';
+import { useFormatters } from '@/lib/format';
 import { DashboardCreateProjectDialog } from './components/DashboardCreateProjectDialog';
 
 interface DashboardProjectsPageProps {
@@ -21,16 +19,13 @@ interface DashboardProjectsPageProps {
 
 export function DashboardProjectsPage({ firstPublish, newSite }: DashboardProjectsPageProps) {
   const { data: projects, isPending } = useProjects();
-  const [range, setRange] = useState<AnalyticsRange>('30d');
-  const { data: analytics, isPending: analyticsPending } = useWorkspaceAnalytics(range);
   const [newProjectOpen, setNewProjectOpen] = useState(Boolean(newSite));
   const t = useT();
   const navigate = useNavigate();
   const { number } = useFormatters();
 
   const totalPages = (projects ?? []).reduce((sum, p) => sum + (p._count?.pages ?? 0), 0);
-  const trend = useMemo(() => viewsTrend(analytics?.timeseries ?? []), [analytics?.timeseries]);
-  const viewsByProject = useMemo(() => new Map((analytics?.byProject ?? []).map((b) => [b.projectId, b.views])), [analytics?.byProject]);
+  const totalDeploys = (projects ?? []).reduce((sum, p) => sum + (p._count?.deployments ?? 0), 0);
 
   useEffect(() => {
     const starterProject = projects?.[0];
@@ -58,34 +53,11 @@ export function DashboardProjectsPage({ firstPublish, newSite }: DashboardProjec
       </div>
 
       {/* KPI cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <SectionCard label={t('dashboard.stats.projects')} value={projects?.length ?? 0} icon={<BookText className="size-4" />} loading={isPending} />
         <SectionCard label={t('dashboard.stats.pages')} value={totalPages} icon={<FileText className="size-4" />} loading={isPending} />
-        <SectionCard
-          label={t('dashboard.stats.pageViews')}
-          value={analytics?.totalViews ?? 0}
-          icon={<BarChart3 className="size-4" />}
-          trend={trend}
-          hint={trend ? t('analytics.vsPrevious') : undefined}
-          loading={analyticsPending}
-        />
-        <SectionCard
-          label={t('dashboard.stats.visitors')}
-          value={analytics?.uniqueVisitors ?? 0}
-          icon={<Users className="size-4" />}
-          loading={analyticsPending}
-        />
+        <SectionCard label={t('dashboard.stats.deploys')} value={totalDeploys} icon={<Rocket className="size-4" />} loading={isPending} />
       </div>
-
-      {/* Interactive views chart */}
-      <ViewsAreaChart
-        title={t('dashboard.viewsTitle')}
-        description={t('dashboard.viewsDesc')}
-        data={analytics?.timeseries ?? []}
-        range={range}
-        onRangeChange={setRange}
-        loading={analyticsPending}
-      />
 
       {/* Sites table */}
       <div className="rounded-xl border border-border bg-card">
@@ -114,7 +86,6 @@ export function DashboardProjectsPage({ firstPublish, newSite }: DashboardProjec
                 <TableHead>{t('dashboard.col.site')}</TableHead>
                 <TableHead className="text-end">{t('dashboard.col.pages')}</TableHead>
                 <TableHead className="text-end">{t('dashboard.col.deploys')}</TableHead>
-                <TableHead className="text-end">{t('dashboard.col.views')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -135,7 +106,6 @@ export function DashboardProjectsPage({ firstPublish, newSite }: DashboardProjec
                   </TableCell>
                   <TableCell className="text-end tabular-nums">{number(project._count?.pages ?? 0)}</TableCell>
                   <TableCell className="text-end tabular-nums">{number(project._count?.deployments ?? 0)}</TableCell>
-                  <TableCell className="text-end tabular-nums">{number(viewsByProject.get(project.id) ?? 0)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

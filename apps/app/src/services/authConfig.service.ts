@@ -1,1 +1,1 @@
-export { useGetPublicMeta } from '@/hooks/api/public';
+export { useGetPublicMeta } from './sites.service';

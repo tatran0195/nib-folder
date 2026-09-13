@@ -17,9 +17,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@nibleaf/clickhouse": "workspace:*",
     "@nibleaf/logger": "workspace:*",
-    "@nibleaf/usage": "workspace:*",
     "@t3-oss/env-core": "^0.13.11",
     "bullmq": "^6.2.0",
     "ioredis": "^6.0.0",

@@ -41,7 +41,6 @@ import { Route as GitPreviewTokenRouteImport } from './routes/git-preview.$token
 import { Route as SitesProjectIdRouteRouteImport } from './routes/sites/$projectId/route'
 import { Route as ToolsRtlDocumentationReadinessRouteImport } from './routes/tools/rtl-documentation-readiness'
 import { Route as AppdashboardIndexRouteImport } from './routes/app/(dashboard)/index'
-import { Route as AppdashboardAnalyticsRouteImport } from './routes/app/(dashboard)/analytics'
 import { Route as AppdashboardMembersRouteImport } from './routes/app/(dashboard)/members'
 import { Route as AppdashboardSettingsRouteImport } from './routes/app/(dashboard)/settings'
 import { Route as AppdashboardSitesRouteImport } from './routes/app/(dashboard)/sites'
@@ -50,7 +49,6 @@ import { Route as SitesProjectIdIndexRouteImport } from './routes/sites/$project
 import { Route as SitesProjectIdSplatRouteImport } from './routes/sites/$projectId/$'
 import { Route as SitesProjectIdChangelogRouteImport } from './routes/sites/$projectId/changelog'
 import { Route as AppProjectsProjectIdIndexRouteImport } from './routes/app/projects/$projectId/index'
-import { Route as AppProjectsProjectIdAnalyticsRouteImport } from './routes/app/projects/$projectId/analytics'
 import { Route as AppProjectsProjectIdEditorRouteImport } from './routes/app/projects/$projectId/editor'
 import { Route as AppProjectsProjectIdPreviewRouteImport } from './routes/app/projects/$projectId/preview'
 import { Route as AppProjectsProjectIdSettingsRouteImport } from './routes/app/projects/$projectId/settings'
@@ -217,11 +215,6 @@ const AppdashboardIndexRoute = AppdashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppdashboardRouteRoute,
 } as any)
-const AppdashboardAnalyticsRoute = AppdashboardAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
-  getParentRoute: () => AppdashboardRouteRoute,
-} as any)
 const AppdashboardMembersRoute = AppdashboardMembersRouteImport.update({
   id: '/members',
   path: '/members',
@@ -262,12 +255,6 @@ const AppProjectsProjectIdIndexRoute =
   AppProjectsProjectIdIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AppProjectsProjectIdRouteRoute,
-  } as any)
-const AppProjectsProjectIdAnalyticsRoute =
-  AppProjectsProjectIdAnalyticsRouteImport.update({
-    id: '/analytics',
-    path: '/analytics',
     getParentRoute: () => AppProjectsProjectIdRouteRoute,
   } as any)
 const AppProjectsProjectIdEditorRoute =
@@ -320,7 +307,6 @@ export interface FileRoutesByFullPath {
   '/tools/rtl-documentation-readiness': typeof ToolsRtlDocumentationReadinessRoute
   '/blog/': typeof BlogIndexRoute
   '/app/projects/$projectId': typeof AppProjectsProjectIdRouteRouteWithChildren
-  '/app/analytics': typeof AppdashboardAnalyticsRoute
   '/app/members': typeof AppdashboardMembersRoute
   '/app/settings': typeof AppdashboardSettingsRoute
   '/app/sites': typeof AppdashboardSitesRoute
@@ -328,7 +314,6 @@ export interface FileRoutesByFullPath {
   '/sites/$projectId/changelog': typeof SitesProjectIdChangelogRoute
   '/app/': typeof AppdashboardIndexRoute
   '/sites/$projectId/': typeof SitesProjectIdIndexRoute
-  '/app/projects/$projectId/analytics': typeof AppProjectsProjectIdAnalyticsRoute
   '/app/projects/$projectId/editor': typeof AppProjectsProjectIdEditorRoute
   '/app/projects/$projectId/preview': typeof AppProjectsProjectIdPreviewRoute
   '/app/projects/$projectId/settings': typeof AppProjectsProjectIdSettingsRoute
@@ -363,14 +348,12 @@ export interface FileRoutesByTo {
   '/git-preview/$token': typeof GitPreviewTokenRoute
   '/tools/rtl-documentation-readiness': typeof ToolsRtlDocumentationReadinessRoute
   '/blog': typeof BlogIndexRoute
-  '/app/analytics': typeof AppdashboardAnalyticsRoute
   '/app/members': typeof AppdashboardMembersRoute
   '/app/settings': typeof AppdashboardSettingsRoute
   '/app/sites': typeof AppdashboardSitesRoute
   '/sites/$projectId/$': typeof SitesProjectIdSplatRoute
   '/sites/$projectId/changelog': typeof SitesProjectIdChangelogRoute
   '/sites/$projectId': typeof SitesProjectIdIndexRoute
-  '/app/projects/$projectId/analytics': typeof AppProjectsProjectIdAnalyticsRoute
   '/app/projects/$projectId/editor': typeof AppProjectsProjectIdEditorRoute
   '/app/projects/$projectId/preview': typeof AppProjectsProjectIdPreviewRoute
   '/app/projects/$projectId/settings': typeof AppProjectsProjectIdSettingsRoute
@@ -410,7 +393,6 @@ export interface FileRoutesById {
   '/tools/rtl-documentation-readiness': typeof ToolsRtlDocumentationReadinessRoute
   '/blog/': typeof BlogIndexRoute
   '/app/projects/$projectId': typeof AppProjectsProjectIdRouteRouteWithChildren
-  '/app/(dashboard)/analytics': typeof AppdashboardAnalyticsRoute
   '/app/(dashboard)/members': typeof AppdashboardMembersRoute
   '/app/(dashboard)/settings': typeof AppdashboardSettingsRoute
   '/app/(dashboard)/sites': typeof AppdashboardSitesRoute
@@ -418,7 +400,6 @@ export interface FileRoutesById {
   '/sites/$projectId/changelog': typeof SitesProjectIdChangelogRoute
   '/app/(dashboard)/': typeof AppdashboardIndexRoute
   '/sites/$projectId/': typeof SitesProjectIdIndexRoute
-  '/app/projects/$projectId/analytics': typeof AppProjectsProjectIdAnalyticsRoute
   '/app/projects/$projectId/editor': typeof AppProjectsProjectIdEditorRoute
   '/app/projects/$projectId/preview': typeof AppProjectsProjectIdPreviewRoute
   '/app/projects/$projectId/settings': typeof AppProjectsProjectIdSettingsRoute
@@ -457,7 +438,6 @@ export interface FileRouteTypes {
     | '/tools/rtl-documentation-readiness'
     | '/blog/'
     | '/app/projects/$projectId'
-    | '/app/analytics'
     | '/app/members'
     | '/app/settings'
     | '/app/sites'
@@ -465,7 +445,6 @@ export interface FileRouteTypes {
     | '/sites/$projectId/changelog'
     | '/app/'
     | '/sites/$projectId/'
-    | '/app/projects/$projectId/analytics'
     | '/app/projects/$projectId/editor'
     | '/app/projects/$projectId/preview'
     | '/app/projects/$projectId/settings'
@@ -500,14 +479,12 @@ export interface FileRouteTypes {
     | '/git-preview/$token'
     | '/tools/rtl-documentation-readiness'
     | '/blog'
-    | '/app/analytics'
     | '/app/members'
     | '/app/settings'
     | '/app/sites'
     | '/sites/$projectId/$'
     | '/sites/$projectId/changelog'
     | '/sites/$projectId'
-    | '/app/projects/$projectId/analytics'
     | '/app/projects/$projectId/editor'
     | '/app/projects/$projectId/preview'
     | '/app/projects/$projectId/settings'
@@ -546,7 +523,6 @@ export interface FileRouteTypes {
     | '/tools/rtl-documentation-readiness'
     | '/blog/'
     | '/app/projects/$projectId'
-    | '/app/(dashboard)/analytics'
     | '/app/(dashboard)/members'
     | '/app/(dashboard)/settings'
     | '/app/(dashboard)/sites'
@@ -554,7 +530,6 @@ export interface FileRouteTypes {
     | '/sites/$projectId/changelog'
     | '/app/(dashboard)/'
     | '/sites/$projectId/'
-    | '/app/projects/$projectId/analytics'
     | '/app/projects/$projectId/editor'
     | '/app/projects/$projectId/preview'
     | '/app/projects/$projectId/settings'
@@ -815,13 +790,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppdashboardIndexRouteImport
       parentRoute: typeof AppdashboardRouteRoute
     }
-    '/app/(dashboard)/analytics': {
-      id: '/app/(dashboard)/analytics'
-      path: '/analytics'
-      fullPath: '/app/analytics'
-      preLoaderRoute: typeof AppdashboardAnalyticsRouteImport
-      parentRoute: typeof AppdashboardRouteRoute
-    }
     '/app/(dashboard)/members': {
       id: '/app/(dashboard)/members'
       path: '/members'
@@ -878,13 +846,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsProjectIdIndexRouteImport
       parentRoute: typeof AppProjectsProjectIdRouteRoute
     }
-    '/app/projects/$projectId/analytics': {
-      id: '/app/projects/$projectId/analytics'
-      path: '/analytics'
-      fullPath: '/app/projects/$projectId/analytics'
-      preLoaderRoute: typeof AppProjectsProjectIdAnalyticsRouteImport
-      parentRoute: typeof AppProjectsProjectIdRouteRoute
-    }
     '/app/projects/$projectId/editor': {
       id: '/app/projects/$projectId/editor'
       path: '/editor'
@@ -930,7 +891,6 @@ const authRouteRouteWithChildren = authRouteRoute._addFileChildren(
 )
 
 interface AppdashboardRouteRouteChildren {
-  AppdashboardAnalyticsRoute: typeof AppdashboardAnalyticsRoute
   AppdashboardMembersRoute: typeof AppdashboardMembersRoute
   AppdashboardSettingsRoute: typeof AppdashboardSettingsRoute
   AppdashboardSitesRoute: typeof AppdashboardSitesRoute
@@ -938,7 +898,6 @@ interface AppdashboardRouteRouteChildren {
 }
 
 const AppdashboardRouteRouteChildren: AppdashboardRouteRouteChildren = {
-  AppdashboardAnalyticsRoute: AppdashboardAnalyticsRoute,
   AppdashboardMembersRoute: AppdashboardMembersRoute,
   AppdashboardSettingsRoute: AppdashboardSettingsRoute,
   AppdashboardSitesRoute: AppdashboardSitesRoute,
@@ -949,7 +908,6 @@ const AppdashboardRouteRouteWithChildren =
   AppdashboardRouteRoute._addFileChildren(AppdashboardRouteRouteChildren)
 
 interface AppProjectsProjectIdRouteRouteChildren {
-  AppProjectsProjectIdAnalyticsRoute: typeof AppProjectsProjectIdAnalyticsRoute
   AppProjectsProjectIdEditorRoute: typeof AppProjectsProjectIdEditorRoute
   AppProjectsProjectIdPreviewRoute: typeof AppProjectsProjectIdPreviewRoute
   AppProjectsProjectIdSettingsRoute: typeof AppProjectsProjectIdSettingsRoute
@@ -958,7 +916,6 @@ interface AppProjectsProjectIdRouteRouteChildren {
 
 const AppProjectsProjectIdRouteRouteChildren: AppProjectsProjectIdRouteRouteChildren =
   {
-    AppProjectsProjectIdAnalyticsRoute: AppProjectsProjectIdAnalyticsRoute,
     AppProjectsProjectIdEditorRoute: AppProjectsProjectIdEditorRoute,
     AppProjectsProjectIdPreviewRoute: AppProjectsProjectIdPreviewRoute,
     AppProjectsProjectIdSettingsRoute: AppProjectsProjectIdSettingsRoute,

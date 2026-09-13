@@ -1,5 +1,4 @@
-import { publicAnalyticsEventSchema } from '@nibleaf/clickhouse';
-import { searchAnswerBody, searchQuery } from '@nibleaf/validators';
+import { publicAnalyticsEventSchema, searchAnswerBody, searchQuery } from '@nibleaf/validators';
 import { type Context, Hono } from 'hono';
 import { z } from 'zod';
 import {

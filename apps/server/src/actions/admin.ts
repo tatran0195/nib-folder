@@ -1,10 +1,9 @@
-import { assignDefaultUsagePlan, type Prisma, prisma } from '@nibleaf/database';
+import { type Prisma, prisma } from '@nibleaf/database';
 import { slugify } from '@nibleaf/shared';
 import { addonDefinitions, defaultProjectAddonProvisioning, projectConfigWithAddons } from '@nibleaf/shared/addons';
 import { env } from '@/env';
 import { AppError, notFound } from '@/errors';
 import { inviteMember } from './members';
-import { getProjectUsage } from './usage';
 import { parseWorkspaceMetadata } from './workspace';
 
 const MAX_PROJECT_SLUG_LENGTH = 63;
@@ -38,7 +37,6 @@ export async function inviteOrganizationOwner(adminUserId: string, input: Invite
   const slug = await uniqueAdminProjectSlug(input.siteSlug || input.siteName);
   const created = await prisma.$transaction(async (tx) => {
     const organization = await tx.organization.create({ data: { name: input.organizationName.trim() } });
-    await assignDefaultUsagePlan(tx, organization.id);
     const project = await tx.project.create({
       data: {
         organizationId: organization.id,
@@ -407,6 +405,43 @@ export async function listAdminSites() {
   });
 }
 
+async function getAdminSiteUsage(organizationId: string, projectId: string) {
+  const now = new Date();
+  const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+
+  const [pages, languages, members, deploymentsThisMonth, latestDeployment, assetAggregate] = await Promise.all([
+    prisma.page.count({ where: { projectId, kind: 'PAGE', branch: { isDefault: true } } }),
+    prisma.language.count({ where: { projectId } }),
+    prisma.member.count({ where: { organizationId } }),
+    prisma.deployment.count({ where: { projectId, createdAt: { gte: monthStart } } }),
+    prisma.deployment.findFirst({
+      where: { projectId, status: 'READY' },
+      orderBy: { version: 'desc' },
+      select: { version: true, completedAt: true, createdAt: true },
+    }),
+    prisma.asset.aggregate({ where: { projectId }, _sum: { size: true }, _count: { _all: true } }),
+  ]);
+
+  return {
+    pages,
+    languages,
+    members,
+    deployments: {
+      thisMonth: deploymentsThisMonth,
+      latestVersion: latestDeployment?.version ?? null,
+      lastPublishedAt: (latestDeployment?.completedAt ?? latestDeployment?.createdAt)?.toISOString() ?? null,
+    },
+    traffic: {
+      pageviews30d: null,
+      searches30d: null,
+    },
+    storage: {
+      bytes: assetAggregate._sum.size ?? 0,
+      assets: assetAggregate._count._all,
+    },
+  };
+}
+
 /** Full operational context for one site/workspace. Sensitive document content,
  * credentials, provider payloads, raw errors, IP data, and tokens are excluded. */
 export async function getAdminSite(projectId: string) {
@@ -488,7 +523,7 @@ export async function getAdminSite(projectId: string) {
   }
 
   const [usage, exportStatuses, recentEvents] = await Promise.all([
-    getProjectUsage(project.organization.id, project.id),
+    getAdminSiteUsage(project.organization.id, project.id),
     prisma.exportJob.groupBy({ by: ['status'], where: { projectId }, _count: { _all: true } }),
     prisma.platformEvent.findMany({
       where: { projectId },

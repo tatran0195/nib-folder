@@ -3,29 +3,13 @@ import { Button } from '@nibleaf/design-system/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@nibleaf/design-system/components/ui/table';
 import { useT } from '@nibleaf/i18n/react';
 import { Link, useNavigate } from '@tanstack/react-router';
-import {
-  ArrowRight,
-  BarChart3,
-  CreditCard,
-  Eye,
-  FileText,
-  Globe2,
-  type LucideIcon,
-  PenLine,
-  Plug,
-  Rocket,
-  Settings as SettingsIcon,
-  Users,
-} from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { SectionCard } from '@/components/analytics/section-card';
-import { ViewsAreaChart } from '@/components/analytics/views-area-chart';
+import { ArrowRight, Eye, FileText, Globe2, type LucideIcon, PenLine, Plug, Rocket, Settings as SettingsIcon, Users } from 'lucide-react';
+import { useMemo } from 'react';
+import { SectionCard } from '@/components/app/section-card';
 import { env } from '@/env';
-import type { AnalyticsRange } from '@/hooks/api';
 import { useDeployments, useDomains, usePages, useProject, useProjectMembers } from '@/hooks/api';
-import { useProjectAnalytics } from '@/hooks/api/analytics';
 import { deploymentStatusLabel, deploymentStatusVariant } from '@/lib/deployment-status';
-import { useFormatters, viewsTrend } from '@/lib/format';
+import { useFormatters } from '@/lib/format';
 import { ProjectPublishFailureCard } from './components/overview/ProjectPublishFailureCard';
 import { ProjectPublishNudge } from './components/overview/ProjectPublishNudge';
 
@@ -40,13 +24,11 @@ export function ProjectOverviewPage({ projectId }: ProjectOverviewPageProps) {
   const t = useT();
   const navigate = useNavigate();
   const { date } = useFormatters();
-  const [range, setRange] = useState<AnalyticsRange>('30d');
   const { data: project } = useProject(projectId);
   const { data: pages } = usePages(projectId);
   const { data: members } = useProjectMembers(projectId);
   const { data: deployments } = useDeployments(projectId);
   const { data: domains } = useDomains(projectId);
-  const { data: analytics, isPending: analyticsPending } = useProjectAnalytics(projectId, range);
 
   const pageCount = (pages ?? []).filter((page) => page.kind !== 'GROUP').length;
   const memberCount = members?.members.length ?? 0;
@@ -58,7 +40,6 @@ export function ProjectOverviewPage({ projectId }: ProjectOverviewPageProps) {
   const baseDomain = siteBaseDomain();
   const liveDomain = primaryDomain?.domain ?? (project && baseDomain ? `${project.slug}.${baseDomain}` : null);
   const liveHref = siteUrl(liveDomain, projectId);
-  const trend = useMemo(() => viewsTrend(analytics?.timeseries ?? []), [analytics?.timeseries]);
   const recentPages = useMemo(
     () =>
       (pages ?? [])
@@ -135,29 +116,10 @@ export function ProjectOverviewPage({ projectId }: ProjectOverviewPageProps) {
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <SectionCard label={t('overview.stats.pages')} value={pageCount} icon={<FileText className="size-4" />} />
         <SectionCard label={t('overview.stats.members')} value={memberCount} icon={<Users className="size-4" />} />
         <SectionCard label={t('overview.stats.deploys')} value={deployCount} icon={<Rocket className="size-4" />} />
-        <SectionCard
-          label={t('overview.stats.pageviews')}
-          value={analytics?.totalViews ?? 0}
-          icon={<BarChart3 className="size-4" />}
-          trend={trend}
-          hint={trend ? t('analytics.vsPrevious') : undefined}
-          loading={analyticsPending}
-        />
-      </div>
-
-      <div className="mt-6">
-        <ViewsAreaChart
-          title={t('overview.viewsTitle')}
-          description={t('overview.viewsDesc')}
-          data={analytics?.timeseries ?? []}
-          range={range}
-          onRangeChange={setRange}
-          loading={analyticsPending}
-        />
       </div>
 
       <div className="mt-6 grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_320px]">
@@ -205,17 +167,11 @@ export function ProjectOverviewPage({ projectId }: ProjectOverviewPageProps) {
 
         <div className="flex flex-col gap-3">
           <h2 className="font-semibold text-sm">{t('overview.manage')}</h2>
-          <ManageRow icon={BarChart3} title={t('overview.link.analytics')} desc={t('overview.link.analyticsDesc')}>
-            <Link className="absolute inset-0" params={{ projectId }} to="/app/projects/$projectId/analytics" />
-          </ManageRow>
           <ManageRow icon={Users} title={t('overview.link.members')} desc={t('overview.link.membersDesc')}>
             <Link className="absolute inset-0" params={{ projectId }} search={{ section: 'members' }} to="/app/projects/$projectId/settings" />
           </ManageRow>
           <ManageRow icon={Plug} title={t('overview.link.integrations')} desc={t('overview.link.integrationsDesc')}>
             <Link className="absolute inset-0" params={{ projectId }} search={{ section: 'integrations' }} to="/app/projects/$projectId/settings" />
-          </ManageRow>
-          <ManageRow icon={CreditCard} title={t('overview.link.billing')} desc={t('overview.link.billingDesc')}>
-            <Link className="absolute inset-0" params={{ projectId }} search={{ section: 'plan' }} to="/app/projects/$projectId/settings" />
           </ManageRow>
           <ManageRow icon={SettingsIcon} title={t('overview.link.settings')} desc={t('overview.link.settingsDesc')}>
             <Link className="absolute inset-0" params={{ projectId }} search={{ section: 'general' }} to="/app/projects/$projectId/settings" />

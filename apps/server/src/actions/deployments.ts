@@ -92,24 +92,7 @@ export const getCurrentSnapshot = async (projectId: string): Promise<SiteSnapsho
       branches: { orderBy: [{ isDefault: 'desc' }, { createdAt: 'asc' }] },
       openApiDocument: true,
       addons: { select: { key: true, enabled: true, config: true } },
-      organization: {
-        select: {
-          usagePlan: {
-            select: {
-              status: true,
-              effectiveAt: true,
-              expiresAt: true,
-              plan: {
-                select: {
-                  key: true,
-                  active: true,
-                  entitlements: { select: { capabilityKey: true, enabled: true, meter: { select: { active: true } } } },
-                },
-              },
-            },
-          },
-        },
-      },
+      organization: { select: { id: true } },
     },
   });
   if (!project) {
@@ -127,11 +110,7 @@ export const getCurrentSnapshot = async (projectId: string): Promise<SiteSnapsho
     createdAt: createdAt.toISOString(),
     updatedAt: updatedAt.toISOString(),
   }));
-  return buildSnapshot(
-    { ...project, addons: projectAddonRowsForDelivery(project.addons, project.organization.usagePlan) },
-    pageRows,
-    new Date().toISOString(),
-  );
+  return buildSnapshot({ ...project, addons: projectAddonRowsForDelivery(project.addons) }, pageRows, new Date().toISOString());
 };
 
 /** Stable JSON compare (key-order independent) for the page `config` blob. */

@@ -1,8 +1,7 @@
-import type { PublicAnalyticsEvent } from '@nibleaf/clickhouse';
 import { prisma } from '@nibleaf/database';
 import type { SearchHit, SearchScope } from '@nibleaf/search';
 import { searchDocs } from '@nibleaf/search';
-import { type AddonDeliveryPlanAssignment, projectAddonRowsForDelivery, projectConfigWithAddons } from '@nibleaf/shared/addons';
+import { projectAddonRowsForDelivery, projectConfigWithAddons } from '@nibleaf/shared/addons';
 import { isPublicMarkdownPage } from '@nibleaf/shared/public-markdown';
 import {
   buildNavTree,
@@ -24,6 +23,7 @@ import {
   type SnapshotVersion,
   withOpenApiNav,
 } from '@nibleaf/shared/site';
+import type { PublicAnalyticsEvent } from '@nibleaf/validators';
 import { getContext } from 'hono/context-storage';
 import { env } from '@/env';
 import { AppError, notFound } from '@/errors';
@@ -38,7 +38,6 @@ import { buildPublishedPageMarkdown } from '@/lib/published-markdown';
 import { filterPagesForReader } from '@/lib/reader-scope';
 import { getCachedIndex } from '@/lib/search-cache';
 import { resolvePublishedSearchContext, resolvePublishedSearchLanguages } from '@/lib/search-configuration';
-import { trackProjectEvent } from './analytics';
 import { stableHash } from './importers/content';
 import { createNotificationsForOrgMembers } from './notifications';
 import { resolveViewerAccess, type ViewerAccess } from './reader-access';
@@ -79,7 +78,6 @@ interface LiveChromeRow {
     projectTranslations: { name: string | null; description: string | null }[];
   }[];
   addons: { key: string; enabled: boolean; config: unknown }[];
-  organization: { usagePlan: AddonDeliveryPlanAssignment | null };
 }
 
 /** A snapshot project enriched with the fields the published-site edge needs
@@ -128,24 +126,6 @@ const getLiveChrome = async (projectId: string): Promise<LiveChromeRow | null> =
       accessMode: true,
       takedownAt: true,
       addons: { select: { key: true, enabled: true, config: true } },
-      organization: {
-        select: {
-          usagePlan: {
-            select: {
-              status: true,
-              effectiveAt: true,
-              expiresAt: true,
-              plan: {
-                select: {
-                  key: true,
-                  active: true,
-                  entitlements: { select: { capabilityKey: true, enabled: true, meter: { select: { active: true } } } },
-                },
-              },
-            },
-          },
-        },
-      },
       // ONLY an explicitly-designated primary domain may become the canonical /
       // 301 target. `verified` proves TXT ownership, not that the domain's CNAME
       // resolves here — consolidating onto a merely-verified domain would 301 a
@@ -188,7 +168,7 @@ const overlayLiveChrome = (project: SnapshotProject, live: LiveChromeRow | null)
   // so they never appear publicly until the next publish, and the frozen
   // label/direction/isDefault keep the exactly-one-default invariant intact.
   const liveByCode = new Map(live.languages.map((language) => [language.code, language]));
-  const liveConfig = projectConfigWithAddons(live.config, projectAddonRowsForDelivery(live.addons, live.organization.usagePlan));
+  const liveConfig = projectConfigWithAddons(live.config, projectAddonRowsForDelivery(live.addons));
   return {
     ...project,
     name: live.name,
@@ -547,11 +527,10 @@ const breadcrumbTrail = (pages: SnapshotPage[], page: SnapshotPage): Array<{ tit
 
 type LocalizedSearchHit = SearchHit & { language: string };
 
-/** Full-text + fuzzy search over a published site; records a search analytics event.
+/** Full-text + fuzzy search over a published site.
  *  The reader UI searches every published language. An explicit `lang` remains
  *  supported for API clients that intentionally want a single-language scope. */
 export const searchSite = async (identifier: string, query: string, lang?: string, limit?: number, version?: string) => {
-  const analyticsStartedAt = performance.now();
   const { snapshot, deploymentId, viewer } = await getPublished(identifier);
   const request = resolvePublishedSearchContext(snapshot, { language: lang, version, limit });
   const docsVersion = request.version;
@@ -598,30 +577,6 @@ export const searchSite = async (identifier: string, query: string, lang?: strin
       : perLanguage.some(({ result }) => result.runtime === 'shadow')
         ? 'shadow'
         : 'legacy';
-  const analyticsLanguage = lang ? request.language : 'all';
-  // Only track queries of a meaningful length so the search-terms analytics
-  // aren't flooded with single-keystroke typeahead fragments (i, in, int…).
-  if (query.trim().length >= 3) {
-    const latencyMs = Math.max(0, Math.round(performance.now() - analyticsStartedAt));
-    const base = { source: 'public_site' as const, consentState: 'unknown' as const };
-    void Promise.allSettled([
-      trackProjectEvent(snapshot.project.id, { name: 'search_query_submitted', query: query.trim(), language: analyticsLanguage }, base),
-      trackProjectEvent(
-        snapshot.project.id,
-        { name: 'search_results_returned', resultCount: hits.length, latencyMs, cacheStatus: 'unknown', language: analyticsLanguage },
-        base,
-      ),
-      ...(hits.length === 0
-        ? [
-            trackProjectEvent(
-              snapshot.project.id,
-              { name: 'search_zero_result', resultCount: 0, latencyMs, noAnswerReason: 'no_match', language: analyticsLanguage },
-              base,
-            ),
-          ]
-        : []),
-    ]);
-  }
   return { hits, runtime, capabilities: { answer: request.configuration.aiAnswers && answerSearchAvailable() } };
 };
 
@@ -695,20 +650,6 @@ export const getSiteChangelogRss = async (identifier: string): Promise<SiteTextD
   };
 };
 
-/** Classify a User-Agent into a coarse device bucket for the analytics breakdown. */
-const deviceFromUserAgent = (ua: string | null): string => {
-  if (!ua) {
-    return 'unknown';
-  }
-  if (/tablet|ipad|playbook|silk|android(?!.*mobile)/i.test(ua)) {
-    return 'tablet';
-  }
-  if (/mobi|iphone|ipod|android.*mobile|blackberry|iemobile|opera mini/i.test(ua)) {
-    return 'mobile';
-  }
-  return 'desktop';
-};
-
 /** How long one feedback notification "covers" a project: while an UNREAD
  *  feedback notification younger than this exists, further feedback events
  *  don't fan out again (a burst of reader votes → one bell entry). */
@@ -737,20 +678,17 @@ const notifyFeedback = async (projectId: string, body: PublicAnalyticsEvent): Pr
       type: 'feedback',
       title: 'New reader feedback',
       body: sentiment ? `A reader marked ${page} as ${sentiment}.` : `A reader left feedback on ${page}.`,
-      href: `/app/projects/${projectId}/analytics`,
+      href: `/app/projects/${projectId}`,
     });
   } catch {
     // never fail the public event write over the inbox
   }
 };
 
-/** Record a public pageview for a published site. Derives the device class from
- *  the User-Agent (and country from a CDN geo header, when present) so the
- *  analytics breakdowns are populated. */
+/** Record a public client event for a published site (e.g. reader feedback). */
 export const recordSiteEvent = async (identifier: string, body: PublicAnalyticsEvent) => {
   const projectId = await resolveProjectId(identifier);
-  // A taken-down project must not keep accumulating analytics rows — this is the
-  // one public write path that never goes through getPublished's gate.
+  // A taken-down project must not accept client events.
   if (await isProjectTakenDown(projectId)) {
     throw notFound('site', { identifier, reason: 'takedown' });
   }
@@ -758,16 +696,6 @@ export const recordSiteEvent = async (identifier: string, body: PublicAnalyticsE
   if (!(await getProjectDeliveryAccess(projectId, headers))) {
     throw notFound('site', { identifier, reason: 'private' });
   }
-  const device = deviceFromUserAgent(headers.get('user-agent'));
-  const country = headers.get('cf-ipcountry') ?? headers.get('x-vercel-ip-country') ?? undefined;
-  await trackProjectEvent(projectId, body.payload, {
-    source: 'public_site',
-    consentState: body.consentState,
-    eventId: body.eventId,
-    sessionId: body.sessionId,
-    country,
-    device,
-  }).catch(() => undefined);
   if (body.payload.name === 'feedback_submitted') {
     await notifyFeedback(projectId, body);
   }

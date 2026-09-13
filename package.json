@@ -34,15 +34,10 @@
     "db:deploy": "pnpm --filter @nibleaf/database migrate:deploy",
     "db:push": "pnpm --filter @nibleaf/database push",
     "db:seed": "pnpm --filter @nibleaf/server seed",
-    "db:studio": "pnpm --filter @nibleaf/database studio",
-    "analytics:migrate": "pnpm --filter @nibleaf/clickhouse migrate",
-    "analytics:backfill": "tsx scripts/analytics-migration.ts backfill",
-    "analytics:reconcile": "tsx scripts/analytics-migration.ts reconcile",
-    "analytics:rollback": "tsx scripts/analytics-migration.ts rollback"
+    "db:studio": "pnpm --filter @nibleaf/database studio"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.11",
-    "@nibleaf/clickhouse": "workspace:*",
     "@nibleaf/database": "workspace:*",
     "@nibleaf/tsconfig": "workspace:*",
     "knip": "6.34.0",

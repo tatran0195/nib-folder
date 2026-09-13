@@ -33,12 +33,6 @@ const projectSettingsRoutes = {
     description: 'Generate or rotate the push-to-deploy webhook secret for this site.',
     responses: ok,
   }),
-  usage: createRouteConfig({
-    guard: [isAuthenticated, requireProjectMember()],
-    tags: ['projects'],
-    description: "Get a site's usage counters (pages, languages, members, deployments, traffic, storage) for the Usage tab.",
-    responses: ok,
-  }),
   searchConfiguration: createRouteConfig({
     guard: [isAuthenticated, requireProjectMember()],
     tags: ['projects'],

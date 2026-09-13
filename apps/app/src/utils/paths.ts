@@ -17,10 +17,6 @@ export function projectPreviewPath(projectId: string) {
   return `/app/projects/${projectId}/preview`;
 }
 
-export function projectAnalyticsPath(projectId: string) {
-  return `/app/projects/${projectId}/analytics`;
-}
-
 export function projectSettingsPath(projectId: string) {
   return `/app/projects/${projectId}/settings`;
 }
@@ -31,10 +27,6 @@ export function dashboardPath() {
 
 export function dashboardSitesPath() {
   return '/app/sites';
-}
-
-export function dashboardAnalyticsPath() {
-  return '/app/analytics';
 }
 
 export function dashboardMembersPath() {

@@ -1,8 +1,9 @@
 import './lib/serialize-bigint';
 
+// trigger bun reload
 import { type ServerType, serve } from '@hono/node-server';
-import { closeQueues, scheduleAnalyticsRollup } from '@nibleaf/bullmq';
-import { clickHouseHealth, closeClickHouseClients, initializeClickHouseFn } from '@nibleaf/clickhouse';
+import { auth } from '@nibleaf/auth/server';
+import { closeQueues } from '@nibleaf/bullmq';
 import { logger } from '@nibleaf/logger';
 import { configureUploadCors, ensureBucket } from '@nibleaf/storage';
 import { Scalar } from '@scalar/hono-api-reference';
@@ -37,16 +38,37 @@ app.get(
 app.get('/docs', Scalar({ theme: 'default', sources: [{ url: '/openapi.json', title: 'Nibleaf API' }] }));
 
 app.get('/health', async (ctx) => {
-  const analytics = await clickHouseHealth();
   const status = shuttingDown ? 'shutting_down' : ready ? 'ok' : 'starting';
-  return ctx.json(
-    { status, service: env.SERVICE_NAME, revision: process.env.NIBLEAF_REVISION ?? 'development', analytics },
-    ready && !shuttingDown ? 200 : 503,
-  );
+  return ctx.json({ status, service: env.SERVICE_NAME, revision: process.env.NIBLEAF_REVISION ?? 'development' }, ready && !shuttingDown ? 200 : 503);
+});
+
+app.get('/api/dev-login', async (ctx) => {
+  if (env.NODE_ENV === 'production') {
+    return ctx.text('Not allowed in production', 403);
+  }
+  const otp = await auth.api.createVerificationOTP({ body: { email: 'demo@nibleaf.test', type: 'sign-in' } });
+  const res = await auth.api.signInEmailOTP({ body: { email: 'demo@nibleaf.test', otp }, asResponse: true });
+  const cookie = res.headers.get('set-cookie');
+  if (cookie) {
+    ctx.header('set-cookie', cookie);
+  }
+  return ctx.redirect(new URL('/app', env.APP_URL).toString(), 302);
+});
+
+app.get('/dev-login', async (ctx) => {
+  if (env.NODE_ENV === 'production') {
+    return ctx.text('Not allowed in production', 403);
+  }
+  const otp = await auth.api.createVerificationOTP({ body: { email: 'demo@nibleaf.test', type: 'sign-in' } });
+  const res = await auth.api.signInEmailOTP({ body: { email: 'demo@nibleaf.test', otp }, asResponse: true });
+  const cookie = res.headers.get('set-cookie');
+  if (cookie) {
+    ctx.header('set-cookie', cookie);
+  }
+  return ctx.redirect(new URL('/app', env.APP_URL).toString(), 302);
 });
 
 async function main() {
-  await initializeClickHouseFn({ roles: ['reader'] });
   server = serve({ port: env.API_PORT, fetch: app.fetch }, (info) => {
     logger.info(`Nibleaf API on http://localhost:${info.port}`);
     logger.info(`  docs   → http://localhost:${info.port}/docs`);
@@ -61,10 +83,6 @@ async function main() {
       .catch((error) => logger.warn({ error }, 'bucket CORS apply failed (browser uploads may be blocked)'));
   }
 
-  // Redis is a required deployment dependency. Scheduling is idempotent and
-  // doubles as the producer readiness gate; do not route traffic to an API
-  // whose publish/email/export jobs would only fail after accepting requests.
-  await scheduleAnalyticsRollup();
   ready = true;
   logger.info({ revision: process.env.NIBLEAF_REVISION ?? 'development' }, 'API ready');
 }
@@ -98,7 +116,7 @@ async function shutdown(signal: string) {
       }
     });
   }
-  await Promise.allSettled([closeQueues(), closeClickHouseClients()]);
+  await Promise.allSettled([closeQueues()]);
   process.exit(0);
 }
 

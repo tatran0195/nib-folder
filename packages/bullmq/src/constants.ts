@@ -5,7 +5,6 @@ export const QueueNames = {
   PUBLISH: 'publish',
   SEARCH: 'search',
   EMAIL: 'email',
-  ANALYTICS: 'analytics',
   EXPORT: 'export',
   GIT: 'git',
 } as const;

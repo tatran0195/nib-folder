@@ -19,11 +19,9 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@nibleaf/auth/tenant-erasure', () => ({
   eraseProjectOrganization: vi.fn(),
-  TenantUsageDeletionPendingError: class extends Error {},
   TenantErasureProjectNotFoundError: class extends Error {},
 }));
 vi.mock('@nibleaf/database', () => ({
-  assignDefaultUsagePlan: vi.fn(),
   prisma: {
     member: { findMany: mocks.memberFindMany },
     project: { findMany: mocks.projectFindMany, findFirst: mocks.projectFindFirst },

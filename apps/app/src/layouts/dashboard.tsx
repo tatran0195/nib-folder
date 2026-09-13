@@ -18,7 +18,6 @@ function titleKeyFromPathname(pathname: string): MessageKey {
   if (pathname.startsWith('/app/settings')) {
     return 'dashboard.header.settings';
   }
-  if (pathname.startsWith('/app/analytics')) return 'nav.analytics';
   if (pathname.startsWith('/app/sites')) return 'nav.sites';
   if (pathname === '/app' || pathname === '/app/') return 'nav.overview';
   return 'dashboard.header.projects';

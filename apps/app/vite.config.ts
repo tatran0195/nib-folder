@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import mdx from '@mdx-js/rollup';
 import { createEnv } from '@t3-oss/env-core';
@@ -67,15 +68,21 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    resolve: { tsconfigPaths: true },
+    resolve: {
+      tsconfigPaths: true,
+      alias: {
+        '@nibleaf/server/rpc': fileURLToPath(new URL('../server/dist/rpc.mjs', import.meta.url)),
+      },
+    },
     server: {
       port: 4310,
       fs: {
         strict: false,
       },
-      // Vite's static middleware claims unknown dotted paths before Nitro in
-      // development. Route imported media directly to the API at that layer.
-      proxy: { '/api/public/assets': { target: apiTarget, changeOrigin: true } },
+      proxy: {
+        '/api/public/assets': { target: apiTarget, changeOrigin: true },
+        '/api': { target: apiTarget, changeOrigin: true },
+      },
     },
     plugins: [
       paraglideVitePlugin({
