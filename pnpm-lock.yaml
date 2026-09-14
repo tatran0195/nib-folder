@@ -815,6 +815,9 @@ importers:
       '@openrouter/sdk':
         specifier: 1.2.100
         version: 1.2.100
+      '@t3-oss/env-core':
+        specifier: ^0.13.11
+        version: 0.13.11(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(zod@4.5.4)
       zod:
         specifier: ^4.5.4
         version: 4.5.4
@@ -1432,6 +1435,9 @@ importers:
       '@nibleaf/validators':
         specifier: workspace:*
         version: link:../validators
+      '@t3-oss/env-core':
+        specifier: ^0.13.11
+        version: 0.13.11(typescript@7.0.2)(valibot@1.4.2(typescript@7.0.2))(zod@4.5.4)
       zod:
         specifier: ^4.5.4
         version: 4.5.4
