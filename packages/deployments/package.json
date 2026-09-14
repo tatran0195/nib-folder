@@ -25,7 +25,7 @@
     "@nibleaf/search": "workspace:*",
     "@nibleaf/shared": "workspace:*",
     "@nibleaf/validators": "workspace:*",
-    "diff": "^7.0.0",
+    "diff": "^9.0.0",
     "got": "16.0.0",
     "hono": "^4.7.4",
     "jose": "^6.1.3",
