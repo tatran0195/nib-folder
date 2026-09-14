@@ -33,7 +33,7 @@
     "@nibleaf/validators": "workspace:*",
     "@t3-oss/env-core": "^0.13.1",
     "got": "^14.4.6",
-    "octokit": "^4.1.2",
+    "octokit": "^5.0.5",
     "zod": "^4.5.4"
   },
   "devDependencies": {
