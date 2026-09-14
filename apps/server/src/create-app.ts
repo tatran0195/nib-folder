@@ -20,6 +20,7 @@ import { securityHeaders } from './middlewares/security-headers';
 import modulesRouter from './modules';
 import mcp from './modules/mcp';
 import { OPEN_MODULES } from './modules/registry';
+import { storageRouter } from '@nibleaf/storage';
 import { wireDomainPackages } from './wire';
 
 const adminOrigin = new URL(env.ADMIN_URL);
@@ -188,6 +189,7 @@ export function createApp(
     .get('/auth/reset-password/:token', (ctx) => ctx.redirect(new URL('/sign-in', env.APP_URL).toString(), 302))
     .on(['POST', 'GET'], '/auth/*', (ctx) => auth.handler(ctx.req.raw))
     .route('/mcp', mcp)
+    .route('/storage/files', storageRouter)
     .route('/', modulesRouter);
 
   // ── Mount module manifests ─────────────────────────────────────────────────

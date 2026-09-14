@@ -241,6 +241,7 @@ const storageProviderId = () => {
   const provider = storageKeys().STORAGE_PROVIDER;
   if (provider === 's3') return 'amazon-s3' as const;
   if (provider === 'b2') return 'backblaze-b2' as const;
+  if (provider === 'local') return null;
   return provider;
 };
 
@@ -404,7 +405,9 @@ const listAuthorizedProjectIntegrations = async (projectId: string): Promise<Int
     connections.set('smtp', adapterConnection(projectId, { providerId: 'smtp' }, project.createdAt));
   }
   const storageId = storageProviderId();
-  connections.set(storageId, adapterConnection(projectId, { providerId: storageId }, project.createdAt));
+  if (storageId) {
+    connections.set(storageId, adapterConnection(projectId, { providerId: storageId }, project.createdAt));
+  }
 
   return INTEGRATION_CATALOG.map((manifest) => ({
     ...manifest,
