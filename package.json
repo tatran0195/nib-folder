@@ -42,7 +42,7 @@
     "domains:test": "dotenv -e .env -- bun scripts/setup-local-domains.ts test"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.11",
+    "@biomejs/biome": "2.5.13",
     "@nibleaf/database": "workspace:*",
     "@nibleaf/tsconfig": "workspace:*",
     "knip": "6.34.0",
