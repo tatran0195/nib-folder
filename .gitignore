@@ -60,3 +60,6 @@ seo-audit/
 .temp/
 tmp/
 temp/
+
+# local storage files
+data/storage/

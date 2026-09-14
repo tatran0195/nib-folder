@@ -4,8 +4,11 @@ import { z } from 'zod';
 export const keys = () =>
   createEnv({
     server: {
-      // Any S3-compatible store. maxio is the local/self-host default.
-      STORAGE_PROVIDER: z.enum(['maxio', 'minio', 's3', 'b2']).default('maxio'),
+      // Storage provider. 'local' for local fs, or any S3-compatible store (maxio, minio, s3, b2).
+      STORAGE_PROVIDER: z.enum(['local', 'maxio', 'minio', 's3', 'b2']).default('maxio'),
+      STORAGE_LOCAL_ROOT_DIR: z.string().default('./data/storage'),
+      STORAGE_SIGNING_SECRET: z.string().optional(),
+      STORAGE_API_URL: z.string().optional(),
       // Internal endpoint used for server→storage operations (e.g. `maxio:9000`).
       STORAGE_ENDPOINT: z.string().optional(),
       // Browser-reachable endpoint used to SIGN presigned upload/download URLs

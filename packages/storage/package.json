@@ -6,10 +6,12 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./keys": "./src/keys.ts"
+    "./keys": "./src/keys.ts",
+    "./router": "./src/router.ts"
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -17,6 +19,7 @@
     "@aws-sdk/s3-request-presigner": "^3.1125.0",
     "@nibleaf/logger": "workspace:*",
     "@t3-oss/env-core": "^0.13.11",
+    "hono": "^4.13.5",
     "zod": "^4.5.4"
   },
   "devDependencies": {
