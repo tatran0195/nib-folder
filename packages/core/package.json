@@ -17,12 +17,12 @@
     "@nibleaf/database": "workspace:*",
     "@nibleaf/i18n": "workspace:*",
     "@nibleaf/shared": "workspace:*",
-    "hono": "^4.13.5",
-    "zod": "^4.5.4"
+    "hono": "^4.13.12",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@nibleaf/tsconfig": "workspace:*",
-    "@types/node": "^22.20.1",
+    "@types/node": "^22.20.5",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11"
   }
