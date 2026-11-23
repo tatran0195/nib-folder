@@ -20,7 +20,7 @@
     "@nibleaf/validators": "workspace:*",
     "@scalar/json-magic": "0.13.3",
     "@scalar/openapi-parser": "^0.29.0",
-    "got": "16.0.0",
+    "got": "16.2.0",
     "yaml": "2.9.0",
     "zod": "^4.5.4"
   },

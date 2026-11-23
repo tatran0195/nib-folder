@@ -27,7 +27,7 @@
     "@nibleaf/storage": "workspace:*",
     "@nibleaf/validators": "workspace:*",
     "@slack/webhook": "8.0.2",
-    "got": "16.0.0",
+    "got": "16.2.0",
     "hono": "^4.7.4",
     "zod": "^4.5.4"
   },
